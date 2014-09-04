@@ -1,0 +1,20 @@
+<div class="row" ng-controller="treeController">
+	<div class="col-md-2">
+		<script type="text/ng-template" id="tree_branch.html">
+			<a ng-click="selectBranch(branch)">
+				<i ng-if="branch.children && branch.children.length > 0" class="fa" ng-class="branch.expanded ? 'fa-minus' : 'fa-plus'"></i>
+				{{branch.name}}
+			</a>
+			<ul ng-if="branch.children && branch.children.length > 0 && branch.expanded" ng-class="getDepthClass(branch)" class="nav nav-tree nav-pills nav-stacked">
+				<li ng-repeat="branch in branch.children" ng-class="path == branch.path && 'active'" ng-include="'tree_branch.html'"></li>
+			</ul>
+		</script>
+		<ul class="nav nav-tree nav-pills nav-stacked">
+			<li ng-repeat="branch in tree" ng-include="'tree_branch.html'"></li>
+		</ul>
+	</div>
+	<div class="col-md-10">
+		Path: {{path}}
+		<pre>{{tree | pretty}}</pre>
+	</div>
+</div>
