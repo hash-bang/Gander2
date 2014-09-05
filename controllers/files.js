@@ -5,7 +5,7 @@ var fs = require('fs');
 var fspath = require('path');
 var mkdirp = require('mkdirp');
 
-app.get('/api/files', function(req, res) {
+app.all('/api/dir', function(req, res) {
 	var path;
 	if (req.param('path')) {
 		path = fspath.join(config.path, req.param('path'));
@@ -32,7 +32,8 @@ app.get('/api/files', function(req, res) {
 
 		results.files.forEach(function(f, i) {
 			tasks.push(function(next) {
-				fs.stat(fspath.join(path, f), function(err, stats) {
+				var filePath = fspath.join(path, f);
+				fs.stat(filePath, function(err, stats) {
 					var fileInfo = {
 						name: f,
 						type:
@@ -45,7 +46,16 @@ app.get('/api/files', function(req, res) {
 					};
 					if (results.json[f])
 						_.extend(fileInfo, results.json[f]);
-					next(null, fileInfo);
+					if (fileInfo.type == 'dir') { // Peek into dir and see if it has any grand-children
+						fs.readdir(filePath, function(err, files) {
+							if (err) return next(err);
+							if (files.length > 0)
+								fileInfo.peekDir = files.length;
+							next(null, fileInfo);
+						});
+					} else { // Not a directory - no need to recurse into it
+						next(null, fileInfo);
+					}
 				});
 			});
 		});
@@ -56,7 +66,7 @@ app.get('/api/files', function(req, res) {
 	});
 });
 
-app.get('/api/thumb', function(req, res) {
+app.all('/api/thumb', function(req, res) {
 	if (req.param('path')) {
 		path = fspath.join(config.path, req.param('path'));
 		thumbPath = fspath.join(config.thumbPath, req.param('path'));

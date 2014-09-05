@@ -1,4 +1,4 @@
-app.controller('treeController', function($scope, $rootScope) {
+app.controller('treeController', function($scope, $rootScope, Files) {
 	$scope.tree = [
 		{
 			path:'/',
@@ -19,7 +19,27 @@ app.controller('treeController', function($scope, $rootScope) {
 		}
 	];
 
-	$scope.path = '/foo/foo-foo';
+	$scope.path = '/';
+
+	$scope.loadBranch = function(path, branch) {
+		Files.dir({path: path}).$promise.then(function(files) {
+			var children = [];
+			_.forEach(files, function(file) {
+				if (file.type == 'dir') {
+					file.path = (path == '/' ? '/' : path + '/') + file.name;
+					children.push(file);
+				}
+			});
+			branch.children = children;
+			console.log('loaded', path, branch, $scope.tree);
+		});
+	};
+
+	$scope.refresh = function() {
+		$scope.loadBranch($scope.path, $scope.tree[0]);
+	};
+	$scope.$on('refresh', $scope.refresh);
+	$scope.refresh();
 
 	$scope.selectBranch = function(branch) {
 		if (branch.children && branch.children.length > 0)
