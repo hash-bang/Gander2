@@ -30,6 +30,8 @@ app.all('/api/dir', function(req, res) {
 		var tasks = [];
 		var contents = [];
 
+		if (err) return res.send(400, err);
+
 		results.files.forEach(function(f, i) {
 			tasks.push(function(next) {
 				var filePath = fspath.join(path, f);
@@ -44,7 +46,7 @@ app.all('/api/dir', function(req, res) {
 						ctime: stats.ctime,
 						mtime: stats.mtime,
 					};
-					if (results.json[f])
+					if (results.json && results.json[f])
 						_.extend(fileInfo, results.json[f]);
 					if (fileInfo.type == 'dir') { // Peek into dir and see if it has any grand-children
 						fs.readdir(filePath, function(err, files) {

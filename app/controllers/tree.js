@@ -1,4 +1,4 @@
-app.controller('treeController', function($scope, $rootScope, Files) {
+app.controller('treeController', function($scope, $rootScope, $q, Files) {
 	$scope.tree = [
 		{
 			path:'/',
@@ -21,22 +21,29 @@ app.controller('treeController', function($scope, $rootScope, Files) {
 
 	$scope.path = '/';
 
-	$scope.loadBranch = function(path, branch) {
-		Files.dir({path: path}).$promise.then(function(files) {
-			var children = [];
-			_.forEach(files, function(file) {
-				if (file.type == 'dir') {
-					file.path = (path == '/' ? '/' : path + '/') + file.name;
-					children.push(file);
-				}
+	/**
+	* Load a branch into an object
+	*/
+	$scope.loadBranch = function(branch) {
+		var branch = branch;
+		var defered = $q.defer();
+		Files.dir({path: branch.path}).$promise
+			.then(function(files) {
+				var children = [];
+				_.forEach(files, function(file) {
+					if (file.type == 'dir') {
+						file.path = (branch.path == '/' ? '/' : branch.path + '/') + file.name;
+						children.push(file);
+					}
+				});
+				branch.children = children;
+				defered.resolve();
 			});
-			branch.children = children;
-			console.log('loaded', path, branch, $scope.tree);
-		});
+		return defered.promise;
 	};
 
 	$scope.refresh = function() {
-		$scope.loadBranch($scope.path, $scope.tree[0]);
+		$scope.loadBranch($scope.tree[0]);
 	};
 	$scope.$on('refresh', $scope.refresh);
 	$scope.refresh();
@@ -44,6 +51,9 @@ app.controller('treeController', function($scope, $rootScope, Files) {
 	$scope.selectBranch = function(branch) {
 		if (branch.children && branch.children.length > 0)
 			branch.expanded = !branch.expanded;
+		$scope.loadBranch(branch).then(function() {
+			branch.expanded = true;
+		});
 		$scope.path = branch.path;
 	};
 
@@ -107,13 +117,10 @@ app.controller('treeController', function($scope, $rootScope, Files) {
 				break;
 			case 'down':
 				node = $scope.getPathParent($scope.path);
-				console.log('PARENT IS', node);
 				for (peerOffset in node.children) {
 					if (node.children[peerOffset].path == $scope.path) {
-						console.log('FOUND SELF AT', peerOffset, node.children.length, 'IN', node.children);
 						peerOffset = parseInt(peerOffset) + 1;
 						if (peerOffset < node.children.length) {
-							console.log('DOWN BECOMES', peerOffset, node.children[peerOffset]);
 							$scope.path = node.children[peerOffset].path;
 						}
 						return;

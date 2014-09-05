@@ -1,4 +1,5 @@
 // Requires {{{
+var bodyParser = require('body-parser')
 var express = require('express');
 var layouts = require('express-ejs-layouts')
 var path = require('path');
@@ -21,6 +22,9 @@ app.set('view engine', 'ejs');
 app.set('layout', 'layouts/main');
 app.enable('view cache');
 app.use(layouts);
+
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded());
 // }}}
 // Controllers {{{
 requireTree('controllers');
