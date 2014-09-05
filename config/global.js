@@ -2,29 +2,32 @@ var _ = require('lodash');
 var path = require('path');
 var fs = require('fs');
 
-var defaults = {
-	env: process.env.NODE_ENV ? process.env.NODE_ENV : 'dev',
-	root: path.normalize(__dirname + '/..'),
-	port: process.env.PORT || 9000,
-	mongo: {
-		name: 'hipsterBingo',
-		uri: 'mongodb://localhost/hipsterBingo',
-		options: {
-			db: {
-				safe: true
-			}
-		}
-	}
-};
+// Determine 'ENV' {{{
+var env = 'dev';
+if (process.env.OPENSHIFT_NODEJS_IP) {
+	env = 'openshift';
+} else if (process.env.NODE_ENV) { // Inherit from NODE_ENV
+	env = process.env.NODE_ENV;
+}
+// }}}
 
-// console.log('ENV is', defaults.env);
+var defaults = {
+	env: env,
+	root: path.normalize(__dirname + '/..'),
+	host: '127.0.0.1',
+	port: process.env.PORT || 9000,
+	url: 'http://localhost',
+	package: require('../package.json'),
+
+	path: 'images',
+	thumbPath: '/tmp/gander',
+	thumbAble: /\.(png|jpe?g|gif)$/i,
+	thumbWidth: 150,
+	thumbHeight: 150,
+};
 
 module.exports = _.merge(
 	defaults,
-	fs.existsSync('./config/' + defaults.env + '.js') ? require('./' + process.env.NODE_ENV + '.js') : {}
+	fs.existsSync('./config/private.js') ? require('./private.js') : {},
+	fs.existsSync('./config/' + defaults.env + '.js') ? require('./' + defaults.env + '.js') : {}
 );
-
-global.mongoose = require('mongoose');
-mongoose.connect(module.exports.mongo.uri);
-global.db = global.mongoose.connection;
-db.on('error', console.error.bind(console, 'DB connection error:'));
