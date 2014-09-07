@@ -94,8 +94,10 @@ app.all('/api/thumb', function(req, res) {
 			fs.exists(thumbPath, function(exists) {
 				if (exists) {
 					res.set('Content-Type', 'image/png');
-					res.send(200, fs.readFileSync(thumbPath)); // Meanwhile respond to the browser in the foreground, buwahaha Node.
+					res.send(200, fs.readFileSync(thumbPath));
 					next('Thumb already exists');
+				} else {
+					next();
 				}
 			});
 		},

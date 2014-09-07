@@ -13,8 +13,9 @@
 			<li ng-repeat="branch in tree" ng-class="path == branch.path && 'active'" ng-include="'tree_branch.html'"></li>
 		</ul>
 	</div>
-	<div class="col-md-10">
-		Path: {{path}}
-		<pre>{{tree | pretty}}</pre>
+	<div class="col-md-10" ng-controller="fileController">
+		<a ng-repeat="file in files" class="thumbnail">
+			<img ng-src="/api/thumb?path={{file.path}}"/>
+		</a>
 	</div>
 </div>

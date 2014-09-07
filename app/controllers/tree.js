@@ -1,4 +1,4 @@
-app.controller('treeController', function($scope, $rootScope, $location, $q, $routeParams, Files) {
+app.controller('treeController', function($scope, $rootScope, $location, $q, $routeParams, Files, $timeout) {
 	$scope.path = $routeParams.p || '/';
 	$scope.tree = [
 		{
@@ -54,10 +54,9 @@ app.controller('treeController', function($scope, $rootScope, $location, $q, $ro
 	$scope.$on('refresh', $scope.refresh);
 	$scope.refresh();
 
-	$scope.setPath = function(path) {
-		$scope.path = path;
-	};
-	$scope.setPath($scope.path);
+	$timeout(function() {
+		$rootScope.$broadcast('changePath', $scope.path);
+	});
 
 	$scope.selectBranch = function(branch) {
 		if (branch.children && branch.children.length > 0)
@@ -66,6 +65,7 @@ app.controller('treeController', function($scope, $rootScope, $location, $q, $ro
 			branch.expanded = true;
 		});
 		$scope.path = branch.path;
+		$rootScope.$broadcast('changePath', $scope.path);
 		$location.search('p', $scope.path);
 	};
 

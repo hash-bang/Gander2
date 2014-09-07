@@ -14,3 +14,10 @@
 .nav-tree.depth-9 {margin-left: 90px};
 .nav-tree.depth-10 {margin-left: 100px};
 /* }}} */
+/* Thumbnails: .thumbnail {{{ */
+a.thumbnail {
+	width: 100px;
+	height: 100px;
+	float: left;
+}
+/* }}} */
