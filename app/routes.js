@@ -1,16 +1,13 @@
 app.config(function($routeProvider, $locationProvider) {
 	$routeProvider
 		.when('/', {
-			templateUrl: "/templates/browse.html",
-			animateIn: 'zoomIn'
+			templateUrl: "/templates/browse.html"
 		})
-		.when('/!/:path', {
+		.when('/!', {
 			templateUrl: "/templates/browse.html",
-			animateIn: 'fadeInRightBig'
+			reloadOnSearch: false
 		})
 		.when('/settings', {
-			templateUrl: "/templates/settings.html",
-			animateIn: 'fadeInUpBig',
-			animateIn: 'fadeOutDownBig'
+			templateUrl: "/templates/settings.html"
 		})
 });

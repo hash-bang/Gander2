@@ -1,44 +1,50 @@
-app.controller('treeController', function($scope, $rootScope, $q, Files) {
+app.controller('treeController', function($scope, $rootScope, $location, $q, $routeParams, Files) {
+	$scope.path = $routeParams.p || '/';
 	$scope.tree = [
 		{
 			path:'/',
 			name: '/',
-			children: [
-				{
-					path: '/foo',
-					name: 'foo',
-					children: [
-						{path: '/foo/foo-foo', name: 'foo-foo'},
-						{path: '/foo/foo-bar', name: 'foo-bar'},
-						{path: '/foo/foo-baz', name: 'foo-baz'}
-					]
-				},
-				{path: '/bar', name: 'bar'},
-				{path: '/baz', name: 'baz'}
-			]
+			status: 'unloaded',
+			children: []
 		}
 	];
-
-	$scope.path = '/';
 
 	/**
 	* Load a branch into an object
 	*/
 	$scope.loadBranch = function(branch) {
-		var branch = branch;
 		var defered = $q.defer();
-		Files.dir({path: branch.path}).$promise
-			.then(function(files) {
-				var children = [];
-				_.forEach(files, function(file) {
-					if (file.type == 'dir') {
-						file.path = (branch.path == '/' ? '/' : branch.path + '/') + file.name;
-						children.push(file);
+		if (branch.status == 'unloaded') {
+			branch.status = 'loading';
+			Files.dir({path: branch.path}).$promise
+				.then(function(files) {
+					var children = [];
+					_.forEach(files, function(file) {
+						if (file.type == 'dir') {
+							file.path = (branch.path == '/' ? '/' : branch.path + '/') + file.name;
+							file.status = 'unloaded';
+							children.push(file);
+						}
+					});
+					branch.children = children;
+					branch.status = 'loaded';
+					if (
+						(branch.path = '/') || // Always expand root
+						(branch.path.substr(0, $scope.path.length) == branch.path) // The loaded dir is in the path (i.e. we should expand it)
+					) {
+						branch.expanded = true;
+						var nextBranches = $scope.path.substr(branch.path.length).split('/');
+						if (nextBranches.length > 0) { // Load more branches based on the path
+							var nextBranchObject = _.find(branch.children, {name: nextBranches[0]});
+							if (nextBranchObject)
+								$scope.loadBranch(nextBranchObject);
+						}
 					}
+					defered.resolve();
 				});
-				branch.children = children;
-				defered.resolve();
-			});
+		} else {
+			defered.resolve();
+		}
 		return defered.promise;
 	};
 
@@ -48,6 +54,11 @@ app.controller('treeController', function($scope, $rootScope, $q, Files) {
 	$scope.$on('refresh', $scope.refresh);
 	$scope.refresh();
 
+	$scope.setPath = function(path) {
+		$scope.path = path;
+	};
+	$scope.setPath($scope.path);
+
 	$scope.selectBranch = function(branch) {
 		if (branch.children && branch.children.length > 0)
 			branch.expanded = !branch.expanded;
@@ -55,6 +66,7 @@ app.controller('treeController', function($scope, $rootScope, $q, Files) {
 			branch.expanded = true;
 		});
 		$scope.path = branch.path;
+		$location.search('p', $scope.path);
 	};
 
 	$scope.getDepthClass = function(branch) {

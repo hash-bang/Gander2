@@ -2,7 +2,7 @@
 	<div class="col-md-2">
 		<script type="text/ng-template" id="tree_branch.html">
 			<a ng-click="selectBranch(branch)">
-				<i ng-if="(branch.children && branch.children.length > 0) || branch.peekDir > 0" class="fa" ng-class="branch.expanded ? 'fa-minus' : 'fa-plus'"></i>
+				<i ng-if="(branch.children && branch.children.length > 0) || branch.peekDir" class="fa" ng-class="branch.expanded ? 'fa-minus' : 'fa-plus'"></i>
 				{{branch.name}}
 			</a>
 			<ul ng-if="branch.children && branch.children.length > 0 && branch.expanded" ng-class="getDepthClass(branch)" class="nav nav-tree nav-pills nav-stacked">

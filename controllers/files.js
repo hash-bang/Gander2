@@ -52,7 +52,6 @@ app.all('/api/dir', function(req, res) {
 						fs.readdir(filePath, function(err, files) {
 							if (err) return next(err);
 							async.detect(files, function(file, peekNext) {
-								console.log('STAT', fspath.join(filePath, file));
 								fs.stat(fspath.join(filePath, file), function(err, stat) {
 									if (err) return peekNext(false);
 									return peekNext(stat.isDirectory());
