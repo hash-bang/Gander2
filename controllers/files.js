@@ -51,9 +51,19 @@ app.all('/api/dir', function(req, res) {
 					if (fileInfo.type == 'dir') { // Peek into dir and see if it has any grand-children
 						fs.readdir(filePath, function(err, files) {
 							if (err) return next(err);
-							if (files.length > 0)
-								fileInfo.peekDir = files.length;
-							next(null, fileInfo);
+							async.detect(files, function(file, peekNext) {
+								console.log('STAT', fspath.join(filePath, file));
+								fs.stat(fspath.join(filePath, file), function(err, stat) {
+									if (err) return peekNext(false);
+									return peekNext(stat.isDirectory());
+								});
+							}, function(result) {
+								if (result) // At least one child of this directory is also a directory
+									fileInfo.peekDir = true;
+								next(null, fileInfo);
+							});
+							/* if (files.length > 0)
+								fileInfo.peekDir = files.length; */
 						});
 					} else { // Not a directory - no need to recurse into it
 						next(null, fileInfo);
