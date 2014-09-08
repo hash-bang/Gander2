@@ -17,7 +17,6 @@ app.controller('fileController', function($scope, $rootScope, Files) {
 						var thumbPath;
 						if ($scope.config.thumbAble.exec(filePath)) { // Can thumb this
 							thumbPath = '/api/thumb' + filePath;
-							console.log('THUMBPATH', thumbPath);
 						} else if (file.type == 'dir') {
 							thumbPath = '/img/icons/dir.png';
 						} else {

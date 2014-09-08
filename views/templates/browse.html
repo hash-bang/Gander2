@@ -16,7 +16,10 @@
 	</div>
 	<div class="col-md-10" ng-controller="fileController">
 		<a ng-repeat="file in files" class="thumbnail">
-			<img ng-src="{{file.thumbPath}}"/>
+			<div class="thumbnail-img">
+				<img ng-src="{{file.thumbPath}}"/>
+			</div>
+			<div class="caption">{{file.name}}</div>
 		</a>
 	</div>
 </div>
