@@ -77,11 +77,11 @@ app.all('/api/dir', function(req, res) {
 	});
 });
 
-app.all('/api/thumb/:path*?', function(req, res) {
+app.get('/api/thumb/*', function(req, res) {
 	var path, thumbPath;
-	if (req.param('path')) {
-		path = fspath.join(config.path, req.param('path'));
-		thumbPath = fspath.join(config.thumbPath, req.param('path'));
+	if (req.params[0]) {
+		path = fspath.join(config.path, req.params[0]);
+		thumbPath = fspath.join(config.thumbPath, req.params[0]);
 	} else {
 		return res.send(400, 'No path specified');
 	}
