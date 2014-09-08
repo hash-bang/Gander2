@@ -78,6 +78,7 @@ app.all('/api/dir', function(req, res) {
 });
 
 app.all('/api/thumb/:path*?', function(req, res) {
+	var path, thumbPath;
 	if (req.param('path')) {
 		path = fspath.join(config.path, req.param('path'));
 		thumbPath = fspath.join(config.thumbPath, req.param('path'));
@@ -89,9 +90,7 @@ app.all('/api/thumb/:path*?', function(req, res) {
 
 	if (!config.thumbAble.exec(path)) return res.send(400, 'Unable to thumb this path');
 
-	var fileBlob;
-
-	async.series([
+	async.waterfall([
 		function(next) {
 			fs.readFile(thumbPath, function(err, data) {
 				if (err) return next(); // Couldn't read existing thumb - continue to generate one and serve that
@@ -108,16 +107,18 @@ app.all('/api/thumb/:path*?', function(req, res) {
 			});
 		},
 		function(next) {
-			mkdirp(fspath.dirname(thumbPath), next);
+			mkdirp(fspath.dirname(thumbPath), function(err) {
+				if (err) return next(err);
+				next();
+			});
 		},
 		function(next) {
 			fs.readFile(path, function(err, data) {
 				if (err) return next(err);
-				fileBlob = data;
-				return next();
+				return next(null, data);
 			});
 		},
-		function(next, data) {
+		function(fileBlob, next) {
 			im.resize({
 				srcData: fileBlob,
 				format: 'png',
@@ -129,6 +130,7 @@ app.all('/api/thumb/:path*?', function(req, res) {
 				fs.writeFile(thumbPath, stdout, 'binary'); // Flush this to disk in the background
 				res.set('Content-Type', 'image/png');
 				res.send(200, buffer); // Meanwhile respond to the browser in the foreground, buwahaha Node.
+				next();
 			});
 		}
 	], function(err) {
