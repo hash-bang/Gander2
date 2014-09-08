@@ -24,6 +24,8 @@ var defaults = {
 	thumbAble: /\.(png|jpe?g|gif)$/i,
 	thumbWidth: 150,
 	thumbHeight: 150,
+
+	serveAble: /\.(png|jpe?g|gif)$/i,
 };
 
 module.exports = _.merge(

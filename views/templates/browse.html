@@ -13,6 +13,9 @@
 	</ul>
 </div>
 
+<div id="viewer" ng-controller="viewerController" ng-show="viewerActive" ng-click="closeFile()">
+	<img ng-src="/api/file{{viewerFile.path}}"/>
+</div>
 
 <div class="row">
 	<div class="col-md-2" ng-controller="treeController">

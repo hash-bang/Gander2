@@ -62,3 +62,14 @@ a.thumbnail .emblems {
 	z-index: 10000;
 }
 /* }}} */
+/* File viewer: #viewer {{{ */
+#viewer {
+	position: fixed;
+	top: 0px;
+	right: 0px;
+	bottom: 0px;
+	left: 0px;
+	background: white;
+	z-index: 2000;
+}
+/* }}} */

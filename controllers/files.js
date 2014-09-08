@@ -137,3 +137,21 @@ app.get('/api/thumb/*', function(req, res) {
 		if (err && err != 'Thumb already exists') return res.send(400, err);
 	});
 });
+
+app.get('/api/file/*', function(req, res) {
+	var path, thumbPath;
+	if (req.params[0]) {
+		path = fspath.join(config.path, req.params[0]);
+	} else {
+		return res.send(400, 'No path specified');
+	}
+
+	if (!config.serveAble.exec(path)) return res.send(400, 'Unable to serve this path');
+
+	fs.readFile(path, function(err, data) {
+		if (err) return next(); // Couldn't read existing thumb - continue to generate one and serve that
+
+		res.set('Content-Type', 'image/png');
+		res.send(200, fs.readFileSync(path));
+	});
+});

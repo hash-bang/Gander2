@@ -164,11 +164,10 @@ app.controller('fileController', function($scope, $rootScope, Files) {
 
 	// Iteraction {{{
 	$scope.itemClick = function(item) {
-		console.log('CLICK', item);
 		if (item.type == 'dir') {
 			$scope.setPath(item.path);
 		} else {
-			console.log('View item not yet supported');
+			$rootScope.$broadcast('changeFile', item);
 		}
 	};
 	// }}}
