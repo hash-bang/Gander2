@@ -51,6 +51,11 @@ a.thumbnail > .caption {
 	text-overflow: ellipsis;
 }
 /* }}} */
+/* Thumbnails / emblems {{{ */
+a.thumbnail .emblems {
+	float: right;
+}
+/* }}} */
 /* Context menus: .dropdown-context-menu {{{ */
 .dropdown-context-menu {
 	position: fixed;

@@ -25,7 +25,7 @@ app.controller('fileController', function($scope, $rootScope, Files) {
 						}
 						// }}}
 
-						$scope.files.push({
+						var fileInfo = {
 							path: filePath,
 							thumbPath: thumbPath,
 							name: file.name,
@@ -33,7 +33,12 @@ app.controller('fileController', function($scope, $rootScope, Files) {
 							size: file.size,
 							mtime: file.mtime,
 							ctime: file.ctime
-						});
+						};
+
+						if (file.emblems)
+							fileInfo.emblems = file.emblems;
+
+						$scope.files.push(fileInfo);
 					});
 					$scope.setSort();
 				});
@@ -98,5 +103,9 @@ app.controller('fileController', function($scope, $rootScope, Files) {
 			default:
 				console.error('Unsupported sort method', method);
 		}
+	};
+
+	$scope.hasStar = function(item) {
+		return item.emblems && _.contains(item.emblems, 'star');
 	};
 });
