@@ -46,3 +46,9 @@ a.thumbnail > .caption {
 	text-overflow: ellipsis;
 }
 /* }}} */
+/* Context menus: .dropdown-context-menu {{{ */
+.dropdown-context-menu {
+	position: fixed;
+	z-index: 10000;
+}
+/* }}} */

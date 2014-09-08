@@ -1,1 +1,32 @@
+<nav class="navbar navbar-default navbar-fixed-top">
+	<div class="container-fluid">
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse">
+				<span class="sr-only">Toggle navigation</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+			<a class="navbar-brand" href="#">Gander</a>
+		</div>
+		<ul class="nav navbar-nav">
+			<li><a href="#" id="menu-go">Go</a></li<>
+			<li><a href="#" id="menu-select">Select</a></li>
+			<li><a href="#" id="menu-zoom">Zoom</a></li>
+			<li><a context-menu="1" data-target="sortMenu">Sort</a></li>
+			<li class="divider"></li>
+		</ul>
+	</div>
+</nav>
+
+<div class="dropdown dropdown-context-menu" id="sortMenu">
+	<ul class="dropdown-menu">
+		<li class="dropdown-header">Sort by</li>
+		<li><a ng-click="setSort('name')"</a>Name</li>
+		<li><a ng-click="setSort('size')"</a>Size</li>
+		<li><a ng-click="setSort('date')"</a>Date</li>
+		<li><a ng-click="setSort('random')"</a>Random</li>
+	</ul>
+</div>
+
 <div ng-view></div>
