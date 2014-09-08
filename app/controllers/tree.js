@@ -1,4 +1,4 @@
-app.controller('treeController', function($scope, $rootScope, $location, $q, $routeParams, Files, $timeout) {
+app.controller('treeController', function($scope, $rootScope, $q, $routeParams, Files, $timeout) {
 	$scope.path = $routeParams.p || '/';
 	$scope.tree = [
 		{
@@ -64,9 +64,7 @@ app.controller('treeController', function($scope, $rootScope, $location, $q, $ro
 		$scope.loadBranch(branch).then(function() {
 			branch.expanded = true;
 		});
-		$scope.path = branch.path;
-		$rootScope.$broadcast('changePath', $scope.path);
-		$location.search('p', $scope.path);
+		$scope.setPath(branch.path);
 	};
 
 	$scope.getDepthClass = function(branch) {
