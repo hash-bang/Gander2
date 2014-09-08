@@ -77,7 +77,7 @@ app.all('/api/dir', function(req, res) {
 	});
 });
 
-app.all('/api/thumb', function(req, res) {
+app.all('/api/thumb/:path*?', function(req, res) {
 	if (req.param('path')) {
 		path = fspath.join(config.path, req.param('path'));
 		thumbPath = fspath.join(config.thumbPath, req.param('path'));
@@ -85,20 +85,20 @@ app.all('/api/thumb', function(req, res) {
 		return res.send(400, 'No path specified');
 	}
 
+	console.log('REQUEST THUMB', path);
+
 	if (!config.thumbAble.exec(path)) return res.send(400, 'Unable to thumb this path');
 
 	var fileBlob;
 
 	async.series([
 		function(next) {
-			fs.exists(thumbPath, function(exists) {
-				if (exists) {
-					res.set('Content-Type', 'image/png');
-					res.send(200, fs.readFileSync(thumbPath));
-					next('Thumb already exists');
-				} else {
-					next();
-				}
+			fs.readFile(thumbPath, function(err, data) {
+				if (err) return next(); // Couldn't read existing thumb - continue to generate one and serve that
+
+				res.set('Content-Type', 'image/png');
+				res.send(200, fs.readFileSync(thumbPath));
+				next('Thumb already exists');
 			});
 		},
 		function(next) {
