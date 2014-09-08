@@ -1,3 +1,8 @@
+/* HTML overrides {{{ */
+body {
+	margin-top: 55px;
+}
+/* }}} */
 /* Tree control: .nav-tree {{{ */
 .nav-tree > li > a {
 	padding: 2px 10px;
