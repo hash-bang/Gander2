@@ -7,4 +7,8 @@ app.controller('globalController', function($scope, $rootScope) {
 	$scope.setSort = function(method) {
 		$rootScope.$broadcast('changeSort', method);
 	};
+
+	$scope.setFilter = function(method, value) {
+		$rootScope.$broadcast('changeFilter', method, value);
+	};
 });

@@ -1,3 +1,19 @@
+<div class="dropdown dropdown-context-menu" id="itemMenu">
+	<ul class="dropdown-menu">
+		<li class="dropdown-header">Sort by</li>
+		<li><a ng-click="setSort('name')"</a>Name</a></li>
+		<li><a ng-click="setSort('size')"</a>Size</a></li>
+		<li><a ng-click="setSort('date')"</a>Date</a></li>
+		<li><a ng-click="setSort('random')"</a>Random</a></li>
+
+		<li class="dropdown-header">Filter by</li>
+		<li><a ng-click="setFilter('files', 'toggle')"</a>Files</a></li>
+		<li><a ng-click="setFilter('dirs', 'toggle')"</a>Directories</a></li>
+		<li><a ng-click="setFilter('stars', 'toggle')"</a>Stars</a></li>
+	</ul>
+</div>
+
+
 <div class="row">
 	<div class="col-md-2" ng-controller="treeController">
 		<script type="text/ng-template" id="tree_branch.html">
@@ -15,7 +31,7 @@
 		</ul>
 	</div>
 	<div class="col-md-10" ng-controller="fileController">
-		<a ng-repeat="file in files" class="thumbnail">
+		<a context-menu data-target="itemMenu" ng-repeat="file in files" ng-show="file.visible" class="thumbnail">
 			<div class="thumbnail-img">
 				<img ng-src="{{file.thumbPath}}"/>
 			</div>

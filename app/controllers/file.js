@@ -1,8 +1,14 @@
 app.controller('fileController', function($scope, $rootScope, Files) {
 	$scope.paths = [];
 	$scope.files = [];
-	$scope.sortMethod = 'name';
 
+	// Utility functions {{{
+	$scope.hasStar = function(item) {
+		return item.emblems && _.contains(item.emblems, 'star');
+	};
+	// }}}
+
+	// Path changing {{{
 	$rootScope.$on('changePath', function(e, path) {
 		console.log('Path overwrite', path);
 		$scope.paths = [path];
@@ -41,10 +47,14 @@ app.controller('fileController', function($scope, $rootScope, Files) {
 						$scope.files.push(fileInfo);
 					});
 					$scope.setSort();
+					$scope.setFilters();
 				});
 		});
 	});
+	// }}}
 
+	// Sorting {{{
+	$scope.sortMethod = 'name';
 	$scope.$on('changeSort', function(e, method) {
 		$scope.setSort(method);
 	});
@@ -104,8 +114,51 @@ app.controller('fileController', function($scope, $rootScope, Files) {
 				console.error('Unsupported sort method', method);
 		}
 	};
+	// }}}
 
-	$scope.hasStar = function(item) {
-		return item.emblems && _.contains(item.emblems, 'star');
+	// Filtering {{{
+	$scope.filters = {
+		// Filter by any of the following if they are true
+		dirs: null,
+		files: null,
+		stars: null
 	};
+	$scope.$on('changeFilter', function(e, property, value) {
+		$scope.setFilters(property, value);
+	});
+	$scope.getVisibility = function(item) {
+		if ($scope.filters.dirs === true && item.type != 'dir')
+			return false;
+
+		if ($scope.filters.files === true && item.type != 'file')
+			return false;
+
+		if ($scope.filters.stars === true && ( !item.emblems || !_.contains(item.emblems, 'star') ) )
+			return false;
+		return true;
+	};
+	$scope.setFilters = function(property, value) {
+		// Deal with filter toggling {{{
+		if (value == 'toggle') {
+			$scope.filters[property] = !$scope.filters[property];
+		} else {
+			$scope.filters[property] = value;
+		}
+		// Mutually exclusive options {{{
+		if (property == 'dirs') {
+			$scope.filters['files'] = ! $scope.filters['dirs'];
+		} else if (property == 'files') {
+			$scope.filters['dirs'] = ! $scope.filters['files'];
+		} else if (property == 'stars') {
+			$scope.filters['files'] = false;
+			$scope.filters['dirs'] = false;
+		}
+		// }}}
+		// }}}
+
+		$scope.files.forEach(function(file) {
+			file.visible = $scope.getVisibility(file);
+		});
+	};
+	// }}}
 });
