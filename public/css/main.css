@@ -8,6 +8,10 @@ body {
 	-ms-user-select: none;
 	user-select: none;
 }
+
+a[ng-click] {
+	cursor: pointer;
+}
 /* }}} */
 /* Tree control: .nav-tree {{{ */
 .nav-tree > li > a {
