@@ -1,6 +1,7 @@
 app.controller('fileController', function($scope, $rootScope, Files) {
 	$scope.paths = [];
 	$scope.files = [];
+	$scope.active = null;
 
 	// Utility functions {{{
 	$scope.hasStar = function(item) {
@@ -168,6 +169,46 @@ app.controller('fileController', function($scope, $rootScope, Files) {
 			$scope.setPath(item.path);
 		} else {
 			$rootScope.$broadcast('changeFile', item);
+		}
+	};
+	// }}}
+
+	// Selection {{{
+	$scope.$on('changeActive', function(e, method, offset) {
+		$scope.setActive(method, offset);
+	});
+	$scope.setActive = function(item, offset) {
+		var myOffset;
+
+		if (_.isObject(item)) {
+			$scope.active = item;
+		} else if (item == 'index') { // $scope.setActive('index', 2); // Select the second item
+			if (offset < 0) {
+				$scope.setActive('first');
+			} else if (offset > $scope.files.length) {
+				$scope.setActive('last');
+			} else 
+				$scope.active = $scope.files[offset];
+		} else if (item == 'first') { // Select first file in dir
+			myOffset = _.findIndex($scope.files, {type: 'file'});
+			$scope.setActive('index', myOffset);
+		} else if (item == 'last') {
+			if ($scope.files.length > 0)
+				$scope.active = $scope.files[$scope.files.length - 1];
+		} else if (item == 'next') {
+			if ($scope.active) {
+				myOffset = _.findIndex($scope.files, {'$$hashKey': $scope.active['$$hashKey']})
+				$scope.setActive('index', myOffset + (offset || 1));
+			} else {
+				$scope.setActive('last');
+			}
+		} else if (item == 'previous') {
+			if ($scope.active) {
+				myOffset = _.findIndex($scope.files, {'$$hashKey': $scope.active['$$hashKey']})
+				$scope.setActive('index', myOffset - (offset || 1));
+			} else {
+				$scope.setActive('first');
+			}
 		}
 	};
 	// }}}

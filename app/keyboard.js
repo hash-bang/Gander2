@@ -36,4 +36,37 @@ app.run(function($rootScope) {
 		$('#iviewer').iviewer('set_zoom', 100);
 	});
 	// }}}
+
+	// Image selection {{{
+	key('a', function() {
+		$rootScope.$apply(function() {
+			$rootScope.$broadcast('changeActive', 'previous');
+		});
+	});
+	key('shift+a, ctrl+a', function() {
+		$rootScope.$apply(function() {
+			$rootScope.$broadcast('changeActive', 'previous', 10);
+		});
+	});
+	key('s', function() {
+		$rootScope.$apply(function() {
+			$rootScope.$broadcast('changeActive', 'next');
+		});
+	});
+	key('shift+s, ctrl+s', function() {
+		$rootScope.$apply(function() {
+			$rootScope.$broadcast('changeActive', 'next', 10);
+		});
+	});
+	key('z', function() {
+		$rootScope.$apply(function() {
+			$rootScope.$broadcast('changeActive', 'first');
+		});
+	});
+	key('x', function() {
+		$rootScope.$apply(function() {
+			$rootScope.$broadcast('changeActive', 'last');
+		});
+	});
+	// }}}
 });

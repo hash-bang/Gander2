@@ -35,7 +35,7 @@
 		</ul>
 	</div>
 	<div class="col-md-10" ng-controller="fileController">
-		<a ng-click="itemClick(file)" context-menu data-target="itemMenu" ng-repeat="file in files" ng-show="file.visible" class="thumbnail">
+		<a ng-click="itemClick(file)" context-menu data-target="itemMenu" ng-repeat="file in files" ng-show="file.visible" class="thumbnail" ng-class="active.$$hashKey == file.$$hashKey ? 'active' : ''">
 			<div class="thumbnail-img">
 				<img ng-src="{{file.thumbPath}}"/>
 			</div>
