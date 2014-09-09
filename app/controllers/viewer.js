@@ -4,7 +4,6 @@ app.controller('viewerController', function($scope, $rootScope) {
 	$scope.mode = 'files';
 
 	$scope.$on('changeFocus', function(e, file, method) {
-		console.log('changeFocus', file, method);
 		$scope.openFile(file, method);
 	});
 
@@ -29,8 +28,6 @@ app.controller('viewerController', function($scope, $rootScope) {
 
 		if (!$scope.viewerFile || !$scope.viewerFile.path)
 			return;
-
-		console.log('VIEW', $scope.viewerFile);
 
 		if ($('#iviewer').hasClass('iviewer_cursor')) {
 			$('#iviewer')

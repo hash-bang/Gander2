@@ -11,7 +11,6 @@ app.controller('fileController', function($scope, $rootScope, Files) {
 
 	// Path changing {{{
 	$rootScope.$on('changePath', function(e, path) {
-		console.log('Path overwrite', path);
 		$scope.active = null;
 		$scope.paths = [path];
 	});
@@ -195,10 +194,12 @@ app.controller('fileController', function($scope, $rootScope, Files) {
 				$scope.active = $scope.files[offset];
 		} else if (item == 'first') { // Select first file in dir
 			myOffset = _.findIndex($scope.files, {type: 'file'});
-			$scope.setActive('index', myOffset);
+			if (myOffset > -1)
+				$scope.active = $scope.files[myOffset];
 		} else if (item == 'last') {
-			if ($scope.files.length > 0)
-				$scope.active = $scope.files[$scope.files.length - 1];
+			myOffset = _.findLastIndex($scope.files, {type: 'file'});
+			if (myOffset > -1)
+				$scope.active = $scope.files[myOffset];
 		} else if (item == 'next') {
 			if ($scope.active) {
 				myOffset = _.findIndex($scope.files, {'$$hashKey': $scope.active['$$hashKey']})
