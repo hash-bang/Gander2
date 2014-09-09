@@ -3,32 +3,60 @@ app.controller('viewerController', function($scope, $rootScope) {
 	$scope.viewerFile = {};
 	$scope.mode = 'files';
 
-	$scope.$on('changeFile', function(e, file) {
-		$scope.openFile(file);
+	$scope.$on('changeFocus', function(e, file, method) {
+		console.log('changeFocus', file, method);
+		$scope.openFile(file, method);
 	});
-	$scope.openFile = function(file) {
+
+	/**
+	* Set the focus of the viewer
+	* @param object file The file object to display
+	* @param string method The method to employ, ENUM: 'toggle', 'set'(to only set if already open), true(to force open), false(to force closed)
+	*/
+	$scope.openFile = function(file, method) {
 		$scope.viewerFile = file;
-		$scope.viewerActive = true;
-		$('#iviewer')
-			.iviewer({
-				src: '/api/file' + $scope.viewerFile.path,
-				zoom: 'fit',
-				onFinishLoad: function() {
-					$('#iviewer')
-						.iviewer('update')
-						.iviewer('fit');
-				},
-				onZoom: function() {
-					if ($scope.mode == 'files')
-						return false;
-				}
-			})
-			.on('mousewheel', function(e) {
-				if ($scope.mode == 'files') {
-					console.log('PREVENT');
-					console.log('WHEEL', e);
-				}
-			});
+
+		if (!method || method == 'toggle') {
+			method = 'toggle';
+			$scope.viewerActive = !$scope.viewerActive;
+		} else if (method == 'set') {
+			if (!$scope.viewerActive)
+				return;
+		} else {
+			$scope.viewerActive = method;
+		}
+
+		if (!$scope.viewerFile || !$scope.viewerFile.path)
+			return;
+
+		console.log('VIEW', $scope.viewerFile);
+
+		if ($('#iviewer').hasClass('iviewer_cursor')) {
+			$('#iviewer')
+				.iviewer('loadImage', '/api/file' + $scope.viewerFile.path);
+		} else {
+			$('#iviewer')
+				.iviewer({
+					src: '/api/file' + $scope.viewerFile.path,
+					zoom: 'fit',
+					onFinishLoad: function() {
+						$('#iviewer')
+							.iviewer('update')
+							.iviewer('fit');
+					},
+					onZoom: function(e) {
+						if ($scope.mode == 'files')
+							return false;
+					}
+				})
+				.on('mousewheel', function(e) {
+					if ($scope.mode == 'files') {
+						$rootScope.$apply(function() {
+							$rootScope.$broadcast('changeActive', e.deltaY < 0 ? 'next' : 'previous');
+						});
+					}
+				});
+		}
 	};
 
 	$scope.closeFile = function() {

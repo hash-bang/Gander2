@@ -171,7 +171,8 @@ app.controller('fileController', function($scope, $rootScope, Files) {
 		if (item.type == 'dir') {
 			$scope.setPath(item.path);
 		} else {
-			$rootScope.$broadcast('changeFile', item);
+			$scope.setActive(item);
+			$rootScope.$broadcast('changeFocus', item, true);
 		}
 	};
 	// }}}
@@ -214,5 +215,8 @@ app.controller('fileController', function($scope, $rootScope, Files) {
 			}
 		}
 	};
+	$scope.$watch('active', function() {
+		$rootScope.$broadcast('changeFocus', $scope.active, 'set');
+	});
 	// }}}
 });
