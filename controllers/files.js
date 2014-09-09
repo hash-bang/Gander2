@@ -5,12 +5,13 @@ var fs = require('fs');
 var fspath = require('path');
 var mkdirp = require('mkdirp');
 
-app.all('/api/dir', function(req, res) {
+app.all('/api/dir/*', function(req, res) {
 	var path;
-	if (req.param('path')) {
-		path = fspath.join(config.path, req.param('path'));
+	if (req.params[0]) {
+		path = fspath.join(config.path, req.params[0]);
+		thumbPath = fspath.join(config.thumbPath, req.params[0]);
 	} else {
-		path = config.path;
+		return res.send(400, 'No path specified');
 	}
 
 	async.parallel({
@@ -21,7 +22,7 @@ app.all('/api/dir', function(req, res) {
 			});
 		},
 		json: function(next) {
-			fs.readFile(fspath.join(path, '.gander.json'), function(err, data) {
+			fs.readFile(fspath.join(path, config.ganderFile), function(err, data) {
 				if (err) return next(); // File probably doesn't exist - fail silently
 				next(null, JSON.parse(data));
 			});
@@ -33,6 +34,9 @@ app.all('/api/dir', function(req, res) {
 		if (err) return res.send(400, err);
 
 		results.files.forEach(function(f, i) {
+			if (f == config.ganderFile) 
+				return;
+
 			tasks.push(function(next) {
 				var filePath = fspath.join(path, f);
 				fs.stat(filePath, function(err, stats) {
@@ -48,7 +52,7 @@ app.all('/api/dir', function(req, res) {
 					};
 					if (results.json && results.json[f])
 						_.extend(fileInfo, results.json[f]);
-					if (fileInfo.type == 'dir') { // Peek into dir and see if it has any grand-children
+					if (fileInfo.type == 'dir') { // Peek into dir and see if it has any grand-children {{{
 						fs.readdir(filePath, function(err, files) {
 							if (err) return next(err);
 							async.detect(files, function(file, peekNext) {
@@ -66,7 +70,7 @@ app.all('/api/dir', function(req, res) {
 						});
 					} else { // Not a directory - no need to recurse into it
 						next(null, fileInfo);
-					}
+					} // }}}
 				});
 			});
 		});
@@ -153,5 +157,52 @@ app.get('/api/file/*', function(req, res) {
 
 		res.set('Content-Type', 'image/png');
 		res.send(200, fs.readFileSync(path));
+	});
+});
+
+app.put('/api/file/*', function(req, res) {
+	var path, thumbPath;
+	if (req.params[0]) {
+		path = fspath.join(config.path, req.params[0]);
+	} else {
+		return res.send(400, 'No path specified');
+	}
+
+	var jsonPath = fspath.join(fspath.dirname(path), config.ganderFile);
+
+	if (!config.serveAble.exec(path)) return res.send(400, 'Unable to serve this path');
+
+	async.waterfall([
+		function(next) {
+			fs.readFile(jsonPath, function(err, data) {
+				if (err) return next(null, '{}'); // File doesn't exist - fake content
+				next(null, data);
+			});
+		},
+		function(fileData, next) {
+			var file = fspath.basename(req.body.path);
+			var jsonData = JSON.parse(fileData);
+			if (!jsonData) return next('Not valid JSON data');
+			if (req.body.emblems && req.body.emblems.length > 0) {
+				if (!jsonData[file])
+					jsonData[file] = {};
+				jsonData[file].emblems = req.body.emblems;
+			} else if (jsonData[file] && jsonData[file].emblems) {
+				delete jsonData[file].emblems;
+			}
+			next(null, jsonData);
+		},
+		function(jsonData, next) {
+			if (_.isEmpty(jsonData)) { // Nothing to write - delete the file if it exists
+				fs.unlink(jsonPath);
+			} else {
+				console.log('WRITE', jsonData);
+				fs.writeFile(jsonPath, JSON.stringify(jsonData));
+			}
+			next();
+		},
+	], function(err, results) {
+		if (err) return res.send(400, err);
+		res.send(200);
 	});
 });

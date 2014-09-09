@@ -220,4 +220,40 @@ app.controller('fileController', function($scope, $rootScope, Files) {
 		$rootScope.$broadcast('changeFocus', $scope.active, 'set');
 	});
 	// }}}
+
+	// Manipulation {{{
+	/**
+	* Changes the emblem of a given item
+	* @param object item The object to change
+	* @param string operation The operation to perform. ENUM: 'toggle' (value is name of item), 'clear'
+	* @param mixed value The value to set if operation requires one
+	*/
+	$scope.setEmblem = function(item, operation, value) {
+		console.log('sE', item, operation, value);
+		switch (operation) {
+			case 'clear':
+				delete item.emblems;
+				break;
+			case 'toggle':
+				if (!item.emblems || !_.contains(item.emblems, value)) { // No emblems exist
+					item.emblems = [value];
+				} else if (!_.contains(item.emblems, value)) { // Some emblems exist - this is not present
+					item.emblems.push(value);
+				} else { // Some emblems exist - this is one
+					item.emblems = _.without(item.emblems, value);
+					if (!item.emblems.length)
+						delete item.emblems;
+				}
+				break;
+		}
+
+		Files.save({path: item.path}, item);
+	};
+	// }}}
+
+	$scope.$on('changeActiveEmblems', function(e, method, parameter) {
+		if (!$scope.active)
+			return;
+		$scope.setEmblem($scope.active, method, parameter);
+	});
 });

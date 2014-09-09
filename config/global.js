@@ -26,6 +26,7 @@ var defaults = {
 	thumbHeight: 150,
 
 	serveAble: /\.(png|jpe?g|gif)$/i,
+	ganderFile: '.gander.json'
 };
 
 module.exports = _.merge(

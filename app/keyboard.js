@@ -63,7 +63,7 @@ app.run(function($rootScope) {
 	// Image filtering {{{
 	key('/', function() {
 		$rootScope.$apply(function() {
-			console.info('FIXME: Not yet supported');
+			$rootScope.$broadcast('changeActiveEmblems', 'toggle', 'star');
 		});
 	});
 	key('shift+/, ctrl+/', function() {
