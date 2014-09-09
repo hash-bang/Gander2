@@ -14,7 +14,8 @@ app.controller('viewerController', function($scope, $rootScope) {
 	* @param string method The method to employ, ENUM: 'toggle', 'set'(to only set if already open), true(to force open), false(to force closed)
 	*/
 	$scope.openFile = function(file, method) {
-		$scope.viewerFile = file;
+		if (_.isObject(file))
+			$scope.viewerFile = file;
 
 		if (!method || method == 'toggle') {
 			method = 'toggle';

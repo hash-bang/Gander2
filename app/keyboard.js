@@ -68,5 +68,11 @@ app.run(function($rootScope) {
 			$rootScope.$broadcast('changeActive', 'last');
 		});
 	});
+
+	key('f, escape', function() {
+		$rootScope.$apply(function() {
+			$rootScope.$broadcast('changeFocus', null, 'toggle');
+		});
+	});
 	// }}}
 });
