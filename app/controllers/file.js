@@ -12,6 +12,7 @@ app.controller('fileController', function($scope, $rootScope, Files) {
 	// Path changing {{{
 	$rootScope.$on('changePath', function(e, path) {
 		console.log('Path overwrite', path);
+		$scope.active = null;
 		$scope.paths = [path];
 	});
 	$scope.$watch('paths', function() {
@@ -49,6 +50,8 @@ app.controller('fileController', function($scope, $rootScope, Files) {
 					});
 					$scope.setSort();
 					$scope.setFilters();
+					if ($scope.active === null)
+						$scope.setActive('first');
 				});
 		});
 	});
