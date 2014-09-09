@@ -37,8 +37,44 @@ app.run(function($rootScope) {
 	});
 	// }}}
 
+	// Image sorting {{{
+	key('t', function() {
+		$rootScope.$apply(function() {
+			$rootScope.$broadcast('changeSort', 'random');
+		});
+	});
+	key('shift+t', function() {
+		$rootScope.$apply(function() {
+			$rootScope.$broadcast('changeSort', 'name');
+		});
+	});
+	key('ctrl+t', function() {
+		$rootScope.$apply(function() {
+			$rootScope.$broadcast('changeSort', 'date');
+		});
+	});
+	key('alt+t', function() {
+		$rootScope.$apply(function() {
+			$rootScope.$broadcast('changeSort', 'size');
+		});
+	});
+	// }}}
+
+	// Image filtering {{{
+	key('/', function() {
+		$rootScope.$apply(function() {
+			console.info('FIXME: Not yet supported');
+		});
+	});
+	key('shift+/, ctrl+/', function() {
+		$rootScope.$apply(function() {
+			$rootScope.$broadcast('changeFilter', 'stars', 'toggle');
+		});
+	});
+	// }}}
+
 	// Image selection {{{
-	key('a', function() {
+	key('a, left, pageup', function() {
 		$rootScope.$apply(function() {
 			$rootScope.$broadcast('changeActive', 'previous');
 		});
@@ -48,7 +84,7 @@ app.run(function($rootScope) {
 			$rootScope.$broadcast('changeActive', 'previous', 10);
 		});
 	});
-	key('s', function() {
+	key('s, right, pagedown', function() {
 		$rootScope.$apply(function() {
 			$rootScope.$broadcast('changeActive', 'next');
 		});
@@ -58,18 +94,18 @@ app.run(function($rootScope) {
 			$rootScope.$broadcast('changeActive', 'next', 10);
 		});
 	});
-	key('z', function() {
+	key('z, home', function() {
 		$rootScope.$apply(function() {
 			$rootScope.$broadcast('changeActive', 'first');
 		});
 	});
-	key('x', function() {
+	key('x, end', function() {
 		$rootScope.$apply(function() {
 			$rootScope.$broadcast('changeActive', 'last');
 		});
 	});
 
-	key('f, escape', function() {
+	key('f, space, escape', function() {
 		$rootScope.$apply(function() {
 			$rootScope.$broadcast('changeFocus', null, 'toggle');
 		});
