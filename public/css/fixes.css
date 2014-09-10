@@ -16,4 +16,13 @@ body {
 .navbar-nav>li>a {
 	padding: 5px;
 }
+
+.navbar .breadcrumb {
+	padding: 3px;
+	margin-bottom: 0;
+}
+
+.navbar .breadcrumb > li:first-child {
+	margin-left: 20px;
+}
 /* }}} */

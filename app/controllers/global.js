@@ -16,4 +16,11 @@ app.controller('globalController', function($scope, $rootScope, $location) {
 	$scope.setFilter = function(method, value) {
 		$rootScope.$broadcast('changeFilter', method, value);
 	};
+
+	// .breadcrumbs {{{
+	$scope.path = null;
+	$scope.$on('changePath', function(e, path) {
+		$scope.path = path;
+	});
+	// }}}
 });

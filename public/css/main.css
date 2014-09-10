@@ -25,7 +25,6 @@ body {
 .row-vbox {
 	display: block;
 	height: 500px;
-	border: 2px solid red;
 	overflow: hidden;
 	margin-left: 0;
 	margin-right: 0;

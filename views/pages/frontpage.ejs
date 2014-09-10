@@ -16,6 +16,14 @@
 			<li><a context-menu="1" data-target="sortMenu">Sort</a></li>
 			<li class="divider"></li>
 		</ul>
+		<ol class="breadcrumb">
+			<li><a href="#?p=/"><i class="fa fa-home"></i></a></li>
+			<li ng-repeat="file in path.split('/').slice(1)" class="active">
+				<a href="#?p=/{{file}}">
+					{{file}}
+				</a>
+			</li>
+		</ol>
 	</div>
 </nav>
 
