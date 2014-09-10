@@ -1,6 +1,5 @@
 /* HTML overrides {{{ */
 body {
-	margin-top: 55px;
 	-webkit-touch-callout: none;
 	-webkit-user-select: none;
 	-khtml-user-select: none;
@@ -11,6 +10,30 @@ body {
 
 a[ng-click] {
 	cursor: pointer;
+}
+/* }}} */
+/* FontAwesome helpers {{{ */
+.fa-blank {
+	width: 14px;
+}
+/* }}} */
+/* Constraint boxes: .row-vbox {{{ */
+body {
+	overflow: hidden;
+}
+
+.row-vbox {
+	display: block;
+	height: 500px;
+	border: 2px solid red;
+	overflow: hidden;
+	margin-left: 0;
+	margin-right: 0;
+}
+
+.row-vbox > div {
+	height: 100%;
+	overflow-y: auto;
 }
 /* }}} */
 /* Tree control: .nav-tree {{{ */
@@ -31,6 +54,7 @@ a[ng-click] {
 /* }}} */
 /* Thumbnails: .thumbnail {{{ */
 a.thumbnail {
+	display: block;
 	width: 100px;
 	height: 130px;
 	float: left;

@@ -1,0 +1,19 @@
+/* Offset main body to compensate for nav bar {{{ */
+body {
+	margin-top: 30px;
+}
+/* }}} */
+/* Main navbar is too big {{{ */
+.navbar {
+	min-height: 0;
+}
+
+.navbar-brand {
+	padding: 5px;
+	height: auto;
+}
+
+.navbar-nav>li>a {
+	padding: 5px;
+}
+/* }}} */

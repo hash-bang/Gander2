@@ -54,6 +54,9 @@ app.controller('fileController', function($scope, $rootScope, Files) {
 				});
 		});
 	});
+	$scope.$watch('files', function() {
+		$(window).trigger('resize');
+	});
 	// }}}
 
 	// Sorting {{{
