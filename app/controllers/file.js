@@ -2,6 +2,7 @@ app.controller('fileController', function($scope, $rootScope, Files) {
 	$scope.paths = [];
 	$scope.files = [];
 	$scope.active = null;
+	$scope.activeIndex = 0; // Calculated on $scope.active change automatically
 
 	// Utility functions {{{
 	$scope.hasStar = function(item) {
@@ -56,6 +57,15 @@ app.controller('fileController', function($scope, $rootScope, Files) {
 	});
 	$scope.$watch('files', function() {
 		$(window).trigger('resize');
+	});
+
+	// Set $scope.activeIndex
+	$scope.$watch('active', function() {
+		if ($scope.active && $scope.active['$$hashKey']) {
+			$scope.activeIndex = _.findIndex($scope.files, {'$$hashKey': $scope.active['$$hashKey']});
+		} else {
+			$scope.activeIndex = false;
+		}
 	});
 	// }}}
 

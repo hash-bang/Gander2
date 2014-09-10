@@ -35,7 +35,7 @@ app.controller('viewerController', function($scope, $rootScope) {
 		} else {
 			$('#iviewer')
 				.iviewer({
-					src: '/api/file' + $scope.viewerFile.path,
+					src: $scope.config.viewerSrcPrefix + $scope.viewerFile.path,
 					zoom: 'fit',
 					onFinishLoad: function() {
 						$('#iviewer')

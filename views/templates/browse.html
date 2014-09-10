@@ -40,7 +40,9 @@
 			</div>
 			<div class="emblems">
 				<img ng-if="hasStar(file)" src="/img/emblems/star.png"/>
+				<img ng-if="$index >= activeIndex - config.cacheBackwards && $index <= activeIndex + config.cacheForewards" src="/img/emblems/cache.png"/>
 			</div>
+			<img class="hide" ng-if="$index >= activeIndex - config.cacheBackwards && $index <= activeIndex + config.cacheForewards" ng-src="{{config.viewerSrcPrefix}}{{file.path}}"/>
 			<div class="caption">{{file.name}}</div>
 		</a>
 	</div>

@@ -7,6 +7,11 @@ app.run(function($rootScope) {
 		thumbWidth: 150,
 		thumbHeight: 150,
 		sortDirFirst: true,
-		sortStarFirst: true
+		sortStarFirst: true,
+
+		cacheBackwards: 3,
+		cacheForewards: 3,
+
+		viewerSrcPrefix: '/api/file'
 	};
 });
