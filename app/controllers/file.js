@@ -225,6 +225,12 @@ app.controller('fileController', function($scope, $rootScope, Files) {
 	// }}}
 
 	// Manipulation {{{
+	$scope.$on('changeActiveEmblems', function(e, method, parameter) {
+		if (!$scope.active)
+			return;
+		$scope.setEmblem($scope.active, method, parameter);
+	});
+
 	/**
 	* Changes the emblem of a given item
 	* @param object item The object to change
@@ -253,10 +259,4 @@ app.controller('fileController', function($scope, $rootScope, Files) {
 		Files.save({path: item.path}, item);
 	};
 	// }}}
-
-	$scope.$on('changeActiveEmblems', function(e, method, parameter) {
-		if (!$scope.active)
-			return;
-		$scope.setEmblem($scope.active, method, parameter);
-	});
 });
