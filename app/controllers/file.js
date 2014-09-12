@@ -235,8 +235,11 @@ app.controller('fileController', function($scope, $rootScope, Files) {
 	};
 	$scope.$watch('active', function() {
 		$rootScope.$broadcast('changeFocus', $scope.active, 'set');
-		if ($scope.active)
-			$('#fileArea').scrollTo($('#f' + $scope.active.$$hashKey));
+		if ($scope.active) {
+			var activeItem = $('#f' + $scope.active.$$hashKey);
+			if (activeItem.length)
+				$('#fileArea').scrollTo(activeItem);
+		}
 	});
 	// }}}
 
@@ -254,7 +257,6 @@ app.controller('fileController', function($scope, $rootScope, Files) {
 	* @param mixed value The value to set if operation requires one
 	*/
 	$scope.setEmblem = function(item, operation, value) {
-		console.log('sE', item, operation, value);
 		switch (operation) {
 			case 'clear':
 				delete item.emblems;
