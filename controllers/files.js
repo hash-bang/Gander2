@@ -1,6 +1,6 @@
 var _ = require('lodash');
 var async = require('async');
-var im = require('imagemagick');
+var gm = require('gm');
 var fs = require('fs');
 var fspath = require('path');
 var mkdirp = require('mkdirp');
@@ -117,25 +117,19 @@ app.get('/api/thumb/*', function(req, res) {
 			});
 		},
 		function(next) {
-			fs.readFile(path, function(err, data) {
-				if (err) return next(err);
-				return next(null, data);
-			});
+			gm(path)
+				.setFormat('png')
+				.resize(config.thumbWidth, config.thumbHeight)
+				.toBuffer(function(err, buffer) {
+					if (err) return next(err);
+					next(null, buffer);
+				});
 		},
-		function(fileBlob, next) {
-			im.resize({
-				srcData: fileBlob,
-				format: 'png',
-				width: config.thumbWidth,
-				height: config.thumbHeight,
-			}, function(err, stdout, stderr) {
-				if (err) return next(err);
-				var buffer = new Buffer(stdout, 'binary');
-				fs.writeFile(thumbPath, stdout, 'binary'); // Flush this to disk in the background
-				res.set('Content-Type', 'image/png');
-				res.send(200, buffer); // Meanwhile respond to the browser in the foreground, buwahaha Node.
-				next();
-			});
+		function(buffer, next) {
+			fs.writeFile(thumbPath, buffer, 'binary'); // Flush this to disk in the background
+			res.set('Content-Type', 'image/png');
+			res.send(200, buffer); // Meanwhile respond to the browser in the foreground, buwahaha Node.
+			next();
 		}
 	], function(err) {
 		if (err && err != 'Thumb already exists') return res.send(400, err);
