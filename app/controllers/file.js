@@ -231,6 +231,8 @@ app.controller('fileController', function($scope, $rootScope, Files) {
 	};
 	$scope.$watch('active', function() {
 		$rootScope.$broadcast('changeFocus', $scope.active, 'set');
+		if ($scope.active)
+			$('#fileArea').scrollTo($('#f' + $scope.active.$$hashKey));
 	});
 	// }}}
 

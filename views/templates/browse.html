@@ -33,16 +33,16 @@
 			<li ng-repeat="branch in tree" ng-class="path == branch.path && 'active'" ng-include="'tree_branch.html'"></li>
 		</ul>
 	</div>
-	<div class="col-md-10" ng-controller="fileController">
-		<a ng-click="itemClick(file)" context-menu data-target="itemMenu" ng-repeat="file in files" ng-show="file.visible" class="thumbnail" ng-class="active.$$hashKey == file.$$hashKey ? 'active' : ''">
+	<div class="col-md-10" ng-controller="fileController" id="fileArea">
+		<a ng-click="itemClick(file)" context-menu data-target="itemMenu" ng-repeat="file in files" ng-show="file.visible" class="thumbnail" ng-class="active.$$hashKey == file.$$hashKey ? 'active' : ''" id="f{{file.$$hashKey}}">
 			<div class="thumbnail-img">
 				<img ng-src="{{file.thumbPath}}"/>
 			</div>
 			<div class="emblems">
 				<img ng-if="hasStar(file)" src="/img/emblems/star.png"/>
-				<img ng-if="$index >= activeIndex - config.cacheBackwards && $index <= activeIndex + config.cacheForewards" src="/img/emblems/cache.png"/>
+				<img ng-if="file.type == 'file' && $index >= activeIndex - config.cacheBackwards && $index <= activeIndex + config.cacheForewards" src="/img/emblems/cache.png"/>
 			</div>
-			<img class="hide" ng-if="$index >= activeIndex - config.cacheBackwards && $index <= activeIndex + config.cacheForewards" ng-src="{{config.viewerSrcPrefix}}{{file.path}}"/>
+			<img class="hide" ng-if="file.type == 'file' && $index >= activeIndex - config.cacheBackwards && $index <= activeIndex + config.cacheForewards" ng-src="{{config.viewerSrcPrefix}}{{file.path}}"/>
 			<div class="caption">{{file.name}}</div>
 		</a>
 	</div>
