@@ -107,7 +107,7 @@ app.run(function($rootScope) {
 
 	key('f, space, escape', function() {
 		$rootScope.$apply(function() {
-			$rootScope.$broadcast('changeFocus', null, 'toggle');
+			$rootScope.$broadcast('doInteract');
 		});
 	});
 	// }}}

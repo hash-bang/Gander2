@@ -179,12 +179,16 @@ app.controller('fileController', function($scope, $rootScope, Files) {
 	// }}}
 
 	// Iteraction {{{
+	$scope.$on('doInteract', function(e) {
+		if ($scope.active)
+			$scope.itemClick($scope.active);
+	});
 	$scope.itemClick = function(item) {
 		if (item.type == 'dir') {
 			$scope.setPath(item.path);
 		} else {
 			$scope.setActive(item);
-			$rootScope.$broadcast('changeFocus', item, true);
+			$rootScope.$broadcast('changeFocus', item, 'toggle');
 		}
 	};
 	// }}}
