@@ -48,11 +48,8 @@ app.controller('viewerController', function($scope, $rootScope) {
 					}
 				})
 				.on('mousewheel', function(e) {
-					if ($scope.mode == 'files') {
-						$rootScope.$apply(function() {
-							$rootScope.$broadcast('changeActive', e.deltaY < 0 ? 'next' : 'previous');
-						});
-					}
+					if ($scope.mode == 'files')
+						ngBroadcast('changeActive', e.deltaY < 0 ? 'next' : 'previous');
 				});
 		}
 	};
