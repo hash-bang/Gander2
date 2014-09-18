@@ -1,18 +1,3 @@
-<div class="dropdown dropdown-context-menu" id="itemMenu">
-	<ul class="dropdown-menu">
-		<li class="dropdown-header">Sort by</li>
-		<li><a ng-click="setSort('name')"</a>Name</a></li>
-		<li><a ng-click="setSort('size')"</a>Size</a></li>
-		<li><a ng-click="setSort('date')"</a>Date</a></li>
-		<li><a ng-click="setSort('random')"</a>Random</a></li>
-
-		<li class="dropdown-header">Filter by</li>
-		<li><a ng-click="setFilter('files', 'toggle')"</a>Files</a></li>
-		<li><a ng-click="setFilter('dirs', 'toggle')"</a>Directories</a></li>
-		<li><a ng-click="setFilter('stars', 'toggle')"</a>Stars</a></li>
-	</ul>
-</div>
-
 <div id="viewer" ng-controller="viewerController" ng-show="viewerActive" ng-click="closeFile()">
 	<div id="iviewer"></div>
 </div>
@@ -34,7 +19,16 @@
 		</ul>
 	</div>
 	<div class="col-md-10" ng-controller="fileController" id="fileArea">
-		<a ng-click="itemClick(file)" context-menu data-target="itemMenu" ng-repeat="file in files" ng-show="file.visible" class="thumbnail" ng-class="active.$$hashKey == file.$$hashKey ? 'active' : ''" id="f{{file.$$hashKey}}">
+		<div class="dropdown dropdown-context-menu" id="itemMenu">
+			<ul class="dropdown-menu">
+				<li><a ng-click="itemInteract(active)">Open</a></li>
+				<li><a ng-if="active.type == 'dir'" ng-click="itemInteract(active, {recursive: true})">Open Recursive</a></li>
+				<li><a ng-if="active.type == 'dir'" ng-click="itemInteract(active, {recursive: true, stars: true})">Open Recursive - Starred only</a></li>
+				<li><a ng-if="active.type == 'dir'" ng-click="itemInteract(active, {method: 'add', recursive: true})">Add to view</a></li>
+			</ul>
+		</div>
+
+		<a ng-click="itemInteract(file)" context-menu="setActive(file)" data-target="itemMenu" ng-repeat="file in files" ng-show="file.visible" class="thumbnail" ng-class="active.$$hashKey == file.$$hashKey ? 'active' : ''" id="f{{file.$$hashKey}}">
 			<div class="thumbnail-img">
 				<img ng-src="{{file.thumbPath}}"/>
 			</div>

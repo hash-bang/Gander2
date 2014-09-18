@@ -76,5 +76,9 @@ app.run(function($rootScope) {
 	key('f, space, escape', function() {
 		ngBroadcast('doInteract');
 	});
+
+	key('shift+f, shift+space', function() {
+		ngBroadcast('doInteract', {recursive: true});
+	});
 	// }}}
 });

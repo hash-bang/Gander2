@@ -1,4 +1,4 @@
-app.controller('fileController', function($scope, $rootScope, Files) {
+app.controller('fileController', function($scope, $rootScope, $timeout, Files) {
 	$scope.paths = [];
 	$scope.files = [];
 	$scope.active = null;
@@ -11,11 +11,39 @@ app.controller('fileController', function($scope, $rootScope, Files) {
 	// }}}
 
 	// Path changing {{{
-	$rootScope.$on('changePath', function(e, path) {
+	$scope.$on('changePath', function(e, path, options) {
+		if (!options)
+			options = {};
+		_.defaults(options, {
+			pathMethod: 'set', // ENUM: set,add
+			recursive: false
+		});
 		$scope.active = null;
-		$scope.paths = [path];
+
+		switch(options.pathMethod) {
+			case 'array':
+				$scope.paths = path;
+				$scope.reload();
+				break;
+			case 'set':
+				$scope.paths = [path];
+				break;
+			case 'add':
+				$scope.paths.push(path);
+				break;
+		}
+		if (options.recursive) {
+			console.log('Open recursive');
+			Files.tree({path: path}).$promise
+				.then(function(paths) {
+					// No idea why this promise resolver exists in its own scope
+					// Use ngBroadcast to rebroadcast back to the correct fileController to update the paths array
+					// - MC 2014-09-18
+					ngBroadcast('changePath', paths, {pathMethod: 'array'});
+				});
+		}
 	});
-	$scope.$watch('paths', function() {
+	$scope.reload = function() {
 		_.forEach($scope.paths, function(path) {
 			Files.dir({path: path}).$promise
 				.then(function(files) {
@@ -54,6 +82,10 @@ app.controller('fileController', function($scope, $rootScope, Files) {
 						$scope.setActive('first');
 				});
 		});
+	};
+	$scope.$watch('paths', function() {
+		console.log('Path change detect', $scope.paths);
+		$scope.reload();
 	});
 	$scope.$watch('files', function() {
 		$(window).trigger('resize');
@@ -179,13 +211,22 @@ app.controller('fileController', function($scope, $rootScope, Files) {
 	// }}}
 
 	// Iteraction {{{
-	$scope.$on('doInteract', function(e) {
+	$scope.$on('doInteract', function(e, options) {
 		if ($scope.active)
-			$scope.itemClick($scope.active);
+			$scope.itemInteract($scope.active, options);
 	});
-	$scope.itemClick = function(item) {
+	/**
+	* Interact with a given item
+	* If its an image it means open them, if its a folder it will be opened
+	* @param object|null item Either the item to interact with or null for the active item
+	* @param object options Options object
+	*/
+	$scope.itemInteract = function(item, options) {
+		if (!item)
+			item = $scope.active;
+
 		if (item.type == 'dir') {
-			$scope.setPath(item.path);
+			$scope.setPath(item.path, options);
 		} else {
 			$scope.setActive(item);
 			$rootScope.$broadcast('changeFocus', item, 'toggle');

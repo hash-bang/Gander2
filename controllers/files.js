@@ -4,6 +4,7 @@ var gm = require('gm');
 var fs = require('fs');
 var fspath = require('path');
 var mkdirp = require('mkdirp');
+var walk = require('walk');
 
 app.all('/api/dir/*', function(req, res) {
 	var path;
@@ -135,6 +136,34 @@ app.get('/api/thumb/*', function(req, res) {
 	], function(err) {
 		if (err && err != 'Thumb already exists') return res.send(400, err);
 	});
+});
+
+
+/**
+* Returns an array of all directories found under the given path
+*/
+app.all('/api/tree/*', function(req, res) {
+	var path;
+	if (req.params[0]) {
+		path = fspath.join(config.path, req.params[0]);
+	} else {
+		path = config.path;
+	}
+
+	var dirRoot = fspath.dirname(path);
+	var paths = [];
+	var walker = walk.walk(path, {followLinks: true});
+	walker
+		.on('directories', function(root, dirStatsArray, next) {
+			dirStatsArray.forEach(function(p) {
+				paths.push(fspath.join(root, p.name).substr(dirRoot.length));
+			});
+			next();
+		})
+		.on('end', function() {
+			res.send(paths);
+		});
+
 });
 
 app.get('/api/file/*', function(req, res) {

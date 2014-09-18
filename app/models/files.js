@@ -6,6 +6,12 @@ app.factory('Files', function($resource) {
 			isArray: true,
 			cache: true
 		},
+		tree: {
+			url: '/api/tree/:path',
+			method: 'get',
+			isArray: true,
+			cache: true
+		},
 		save: {
 			url: '/api/file/:path',
 			method: 'put'

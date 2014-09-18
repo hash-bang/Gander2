@@ -4,8 +4,13 @@ app.controller('globalController', function($scope, $rootScope, $location) {
 	$scope.user = {};
 	// }}}
 
-	$scope.setPath = function(path) {
-		$rootScope.$broadcast('changePath', path);
+	/**
+	* Set the currently viewed path
+	* @param string path The path to set
+	* @param object options The options to use when setting
+	*/
+	$scope.setPath = function(path, options) {
+		$scope.$broadcast('changePath', path, options);
 		$location.search('p', path);
 	};
 
