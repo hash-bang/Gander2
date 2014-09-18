@@ -1,4 +1,13 @@
+/**
+* Storage of the $rootScope if we've already had to find it
+* @var object
+*/
 var ngRootScope = null;
+
+/**
+* Cache of Angular named controllers if we've already had to find them
+* @var object
+*/
 var ngControllers = {};
 
 /**
@@ -9,15 +18,78 @@ var ngControllers = {};
 */
 function ngApply(controller, cb) {
 	var scope = ngGetScope(controller);
-	if (!scope)
+	if (!scope) {
+		console.error('Cannot find controler', controller, 'when attempting to apply code');
 		return;
+	}
 
 	scope.$apply(function() {
 		cb(scope);
 	});
 }
 
+/**
+* Broadcast an event into the $rootScope downwards though all controllers
+* This function is the equivelent of Angulars `$rootScope.$broadcast()`
+* @param string event The event name to broadcast
+* @param mixed parameters,... Optional parameters to include in the broadcast
+*/
+function ngBroadcast(eventName) {
+	var rootScope = ngGetRootScope();
+	if (!rootScope) {
+		console.error('Tried to broadcast', eventName, 'but the $rootScope cannot be found');
+		return;
+	}
 
+	var args = arguments;
+	if (!rootScope.$$phase) {
+		rootScope.$apply(function() {
+			rootScope.$broadcast.apply(rootScope, args);
+		});
+	} else {
+		setTimeout(function() {
+			rootScope.$apply(function() {
+				rootScope.$broadcast.apply(rootScope, args);
+			});
+		}, 0);
+	}
+}
+
+/**
+* Set a variable within a controller
+* This is functionally similar to `$scope.<variable> = <value>` run within a controller
+* @param string controller The name of the controller to set the scope variable of
+* @param string variable The name of the scoped variable to set. This can be nested (e.g. 'foo.bar.baz' or 'foo[1].bar[5].baz')
+* @param mixed value The value of the variable to set
+* @return bool True if we managed to set something
+*/
+function ngSet(controller, variable, value) {
+	var scope = ngGetScope(controller);
+	if (!scope) {
+		console.error('Cannot find controler', controller, 'when attempting to set variable', variable);
+		return;
+	}
+
+	// Split variable name into path chunks
+	var path = variable
+		.replace(/\[(.+)]\]/, '.$1.') // Rewrite foo[1] -> foo.1 (trailing . is ignored anyway)
+		.split('.');
+
+	scope.$apply(function() {
+		var target = scope;
+		for (var p in path) {
+			if (target[path[p]]) { // Not a blank string
+				target = target[path[p]];
+			} else { // Cannot find path to set variable
+				return;
+			}
+		}
+		target = value;
+	});
+};
+
+
+// Utility functions {{{
 /**
 * Return a Angular controller scope object by name
 * This function isn't really meant to be used alone, see ngApply() for a more useful function
@@ -89,21 +161,4 @@ function ngGetRootScope() {
 	return ngRootScope;
 }
 
-/**
-* Broadcast an event into the $rootScope downwards though all controllers
-* This function is the equivelent of Angulars `$rootScope.$broadcast()`
-* @param string event The event name to broadcast
-* @param mixed parameters,... Optional parameters to include in the broadcast
-*/
-function ngBroadcast(eventName) {
-	var rootScope = ngGetRootScope();
-	if (!rootScope) {
-		console.error('Tried to broadcast', eventName, 'but the $rootScope cannot be found');
-		return;
-	}
 
-	var args = arguments;
-	rootScope.$apply(function() {
-		rootScope.$broadcast.apply(rootScope, args);
-	});
-}
