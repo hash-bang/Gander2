@@ -11,7 +11,8 @@ app.all('/api/dir/*', function(req, res) {
 		path = fspath.join(config.path, req.params[0]);
 		thumbPath = fspath.join(config.thumbPath, req.params[0]);
 	} else {
-		return res.send(400, 'No path specified');
+		path = config.path;
+		thrumbPath = config.thumbPath;
 	}
 
 	async.parallel({
