@@ -1,7 +1,7 @@
 {
-  "name": "hipster-bingo",
-  "description": "Hipster Bingo test app",
-  "version": "0.0.1",
+  "name": "Gander",
+  "description": "Simple NodeJS gallery application suitable for kiosks",
+  "version": "2.0.0",
   "private": true,
   "dependencies": {
     "express": "3.x",
