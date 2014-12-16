@@ -8,33 +8,32 @@ var paths = {
 		'public/js/**/*.js',
 		'app/**/*.js'
 	],
-	data: [
-		'models/data/**/*.js'
-	],
 	build: 'build'
 };
+
 
 gulp.task('clean', function(cb) {
 	return gulp.src(paths.build)
 		.pipe(plugins.rimraf());
 });
 
-gulp.task('scripts', ['clean', 'lint'], function() {
+
+gulp.task('scripts', ['clean'], function() {
 	return gulp.src(paths.scripts)
 		// .pipe(plugins.uglify())
 		.pipe(plugins.concatSourcemap('all.min.js'))
 		.pipe(gulp.dest(paths.build));
 });
 
-gulp.task('lint', function () {
-	gulp.src(paths.scripts)
-		.pipe(plugins.jshint());
-})
 
-gulp.task('db', function() {
-	gulp.src(paths.data, {read: false})
-		.pipe(plugins.shell('node <%=file.path%>'));
+/**
+* Output the current environment config
+*/
+gulp.task('config', function() {
+	var config = require('./config/global');
+	gutil.log(config);
 });
+
 
 gulp.task('default', ['scripts'], function () {
 	plugins.nodemon({script: 'server.js', ext: 'html js ejs'})
