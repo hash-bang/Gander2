@@ -1,6 +1,6 @@
 var _ = require('lodash');
-var path = require('path');
 var fs = require('fs');
+var fspath = require('path');
 
 // Determine 'ENV' {{{
 var env = 'dev';
@@ -13,13 +13,13 @@ if (process.env.OPENSHIFT_NODEJS_IP) {
 
 var defaults = {
 	env: env,
-	root: path.normalize(__dirname + '/..'),
+	root: fspath.normalize(__dirname + '/..'),
 	host: '127.0.0.1',
 	port: process.env.PORT || 9000,
 	url: 'http://localhost',
 	package: require('../package.json'),
 
-	path: 'images',
+	path: fspath.join(__dirname, 'images'),
 	thumbPath: '/tmp/gander',
 	thumbAble: /\.(png|jpe?g|gif)$/i,
 	thumbWidth: 150,
