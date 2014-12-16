@@ -24,7 +24,7 @@ app.enable('view cache');
 app.use(layouts);
 
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded());
+app.use(bodyParser.urlencoded({extended: false}));
 // }}}
 // Controllers {{{
 requireTree('controllers');
