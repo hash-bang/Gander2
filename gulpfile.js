@@ -30,7 +30,7 @@ gulp.task('scripts', ['clean'], function() {
 * Output the current environment config
 */
 gulp.task('config', function() {
-	var config = require('./config/global');
+	var config = require('./config');
 	gutil.log(config);
 });
 

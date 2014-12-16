@@ -10,13 +10,13 @@ global.app = express();
 var requireTree = function(dir) {
 	dir = path.join(__dirname, dir);
 	fs.readdirSync(dir).forEach(function (file) {
-		if (/(.*)\.(js$|coffee$)/.test(file))
+		if (/(.*)\.js$/.test(file))
 			require(path.join(dir, file));
 	});
 }
 // }}}
 // Settings {{{
-global.config = require('./config/global');
+global.config = require('./config');
 app.set('title', 'Gander');
 app.set('view engine', 'ejs');
 app.set('layout', 'layouts/main');
