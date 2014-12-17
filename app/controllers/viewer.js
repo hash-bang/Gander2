@@ -1,4 +1,5 @@
 app.controller('viewerController', function($scope, $rootScope) {
+	$scope.ignoreNextClick = false;
 	$scope.viewerActive = false;
 	$scope.viewerFile = {};
 	$scope.mode = 'files';
@@ -42,6 +43,20 @@ app.controller('viewerController', function($scope, $rootScope) {
 						$('#iviewer')
 							.iviewer('update')
 							.iviewer('fit');
+					},
+					onStopDrag: function() {
+						ngApply('viewerController', function($scope) {
+							$scope.ignoreNextClick = true; // So we dont also fire the click-closer
+						});
+					},
+					onClick: function() {
+						ngApply('viewerController', function($scope) {
+							if ($scope.ignoreNextClick) {
+								$scope.ignoreNextClick = false;
+							} else {
+								$scope.closeFile();
+							}
+						});
 					}
 				})
 				.on('mousewheel', function(e) {
