@@ -18,6 +18,9 @@ gulp.task('clean', function(cb) {
 });
 
 
+gulp.task('build', ['scripts']);
+
+
 gulp.task('scripts', ['clean'], function() {
 	return gulp.src(paths.scripts)
 		// .pipe(plugins.uglify())
