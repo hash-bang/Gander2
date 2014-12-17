@@ -2,10 +2,15 @@ app.controller('viewerController', function($scope, $rootScope) {
 	$scope.ignoreNextClick = false;
 	$scope.viewerActive = false;
 	$scope.viewerFile = {};
-	$scope.mode = 'files';
+	$scope.wheelMode = 'files'; // What to do when mouse-wheeling - ENUM: files, zoom
 
 	$scope.$on('changeFocus', function(e, file, method) {
 		$scope.openFile(file, method);
+	});
+
+	$scope.$on('changeWheelMode', function(e) {
+		$scope.wheelMode = $scope.wheelMode == 'files' ? 'zoom' : 'files';
+		console.log('WHEELMODE', $scope.wheelMode);
 	});
 
 	/**
@@ -60,7 +65,7 @@ app.controller('viewerController', function($scope, $rootScope) {
 					}
 				})
 				.on('mousewheel', function(e) {
-					if ($scope.mode == 'files')
+					if ($scope.wheelMode == 'files')
 						ngBroadcast('changeActive', e.deltaY < 0 ? 'next' : 'previous');
 				});
 		}

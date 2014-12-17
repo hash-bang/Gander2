@@ -29,6 +29,12 @@ app.run(function($rootScope) {
 	});
 	// }}}
 
+	// Mode toggles {{{
+	key('backspace', function() {
+		ngBroadcast('changeWheelMode');
+	});
+	// }}}
+
 	// Image sorting {{{
 	key('t', function() {
 		ngBroadcast('changeSort', 'random');
