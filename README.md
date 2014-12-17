@@ -14,3 +14,7 @@ Installation
 	# Install all 3rd party libraries
 	npm install
 	bower install
+
+Run with:
+
+	gulp
