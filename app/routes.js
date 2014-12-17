@@ -1,7 +1,8 @@
 app.config(function($routeProvider, $locationProvider) {
 	$routeProvider
 		.when('/', {
-			templateUrl: "/templates/browse.html"
+			templateUrl: "/templates/browse.html",
+			reloadOnSearch: false
 		})
 		.when('/!', {
 			templateUrl: "/templates/browse.html",
