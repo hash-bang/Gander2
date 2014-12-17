@@ -38,9 +38,12 @@ gulp.task('config', function() {
 });
 
 
-gulp.task('default', ['scripts'], function () {
-	plugins.nodemon({script: 'server.js', ext: 'html js ejs'})
-		.on('change', ['scripts'])
+gulp.task('default', ['build'], function () {
+	plugins.nodemon({
+		script: 'server.js',
+		ext: 'html js ejs css'
+	})
+		.on('change', ['build'])
 		.on('restart', function () {
 			gutil.log('Restarted!'.red)
 		});
