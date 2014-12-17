@@ -16,10 +16,10 @@ app.run(function($rootScope) {
 
 	// Image zooming {{{
 	key('q, minus', function() {
-		$('#iviewer').iviewer('zoom_by', 1);
+		$('#iviewer .iviewer_zoom_in').trigger('mousedown');
 	});
 	key('w, plus', function() {
-		$('#iviewer').iviewer('zoom_by', -1);
+		$('#iviewer .iviewer_zoom_out').trigger('mousedown');
 	});
 	key('e', function() {
 		$('#iviewer').iviewer('fit');

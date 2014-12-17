@@ -108,7 +108,7 @@ a.thumbnail .emblems {
 	z-index: 10000;
 }
 /* }}} */
-/* File viewer: #viewer {{{ */
+/* Image viewer: #viewer {{{ */
 #viewer {
 	position: fixed;
 	top: 0px;
@@ -125,5 +125,10 @@ a.thumbnail .emblems {
 	display: block;
 	width: 100%;
 	height: 100%;
+}
+
+/* Hide all iViewer buttons - we need them to be able to trigger actions but they look ugly */
+#iviewer .iviewer_common {
+	display: none;
 }
 /* }}} */

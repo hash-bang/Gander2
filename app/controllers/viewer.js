@@ -36,15 +36,12 @@ app.controller('viewerController', function($scope, $rootScope) {
 			$('#iviewer')
 				.iviewer({
 					src: $scope.config.viewerSrcPrefix + $scope.viewerFile.path,
+					ui_disabled: false,
 					zoom: 'fit',
 					onFinishLoad: function() {
 						$('#iviewer')
 							.iviewer('update')
 							.iviewer('fit');
-					},
-					onZoom: function(e) {
-						if ($scope.mode == 'files')
-							return false;
 					}
 				})
 				.on('mousewheel', function(e) {
