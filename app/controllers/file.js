@@ -23,10 +23,12 @@ app.controller('fileController', function($scope, $rootScope, $timeout, Files) {
 		switch(options.pathMethod) {
 			case 'array':
 				$scope.paths = path;
+				$scope.files = [];
 				$scope.reload();
 				break;
 			case 'set':
 				$scope.paths = [path];
+				$scope.files = [];
 				break;
 			case 'add':
 				$scope.paths.push(path);
