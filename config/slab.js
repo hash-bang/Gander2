@@ -1,4 +1,5 @@
 // MC's development rig
 module.exports = {
-	port: 80
+	port: 80,
+	url: 'http://local',
 };

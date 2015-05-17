@@ -15,7 +15,7 @@ app.controller('fileController', function($scope, $rootScope, $timeout, Files) {
 		if (!options)
 			options = {};
 		_.defaults(options, {
-			pathMethod: 'set', // ENUM: set,add
+			pathMethod: 'set',
 			recursive: false
 		});
 		$scope.active = null;

@@ -1,14 +1,14 @@
 app.config(function($routeProvider, $locationProvider) {
 	$routeProvider
 		.when('/', {
-			templateUrl: "/templates/browse.html",
+			templateUrl: "/partials/browse.html",
 			reloadOnSearch: false
 		})
 		.when('/!', {
-			templateUrl: "/templates/browse.html",
+			templateUrl: "/partials/browse.html",
 			reloadOnSearch: false
 		})
 		.when('/settings', {
-			templateUrl: "/templates/settings.html"
+			templateUrl: "/partials/settings.html"
 		})
 });

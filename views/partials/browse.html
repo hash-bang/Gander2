@@ -11,11 +11,11 @@
 				{{branch.name}}
 			</a>
 			<ul ng-if="branch.children && branch.children.length > 0 && branch.expanded" ng-class="getDepthClass(branch)" class="nav nav-tree nav-pills nav-stacked">
-				<li ng-repeat="branch in branch.children" ng-class="path == branch.path && 'active'" ng-include="'tree_branch.html'"></li>
+				<li ng-repeat="branch in branch.children" ng-class="path == branch.path ? 'active' : ''" ng-include="'tree_branch.html'"></li>
 			</ul>
 		</script>
 		<ul class="nav nav-tree nav-pills nav-stacked">
-			<li ng-repeat="branch in tree" ng-class="path == branch.path && 'active'" ng-include="'tree_branch.html'"></li>
+			<li ng-repeat="branch in tree" ng-class="path == branch.path ? 'active' : ''" ng-include="'tree_branch.html'"></li>
 		</ul>
 	</div>
 	<div class="col-md-10" ng-controller="fileController" id="fileArea">

@@ -1,25 +1,37 @@
 var _ = require('lodash');
+var path = require('path');
 var fs = require('fs');
-var fspath = require('path');
 
 // Determine 'ENV' {{{
 var env = 'dev';
-if (process.env.OPENSHIFT_NODEJS_IP) {
+if (process.env.VCAP_SERVICES) {
+	env = 'appfog';
+} else if (process.env.OPENSHIFT_NODEJS_IP) {
 	env = 'openshift';
+} else if (process.env.MONGOLAB_URI) {
+	env = 'heroku';
 } else if (process.env.NODE_ENV) { // Inherit from NODE_ENV
 	env = process.env.NODE_ENV;
 }
 // }}}
 
 var defaults = {
+	name: "gander",
+	title: "Gander",
 	env: env,
-	root: fspath.normalize(__dirname + '/..'),
-	host: '127.0.0.1',
-	port: process.env.PORT || 9000,
+	root: path.normalize(__dirname + '/..'),
+	host: null, // Listen to all host requests
+	port: process.env.PORT || 80,
 	url: 'http://localhost',
+	gulp: {
+		debugJS: true,
+		minifyJS: false,
+		debugCSS: true,
+		minifyCSS: false,
+	},
 	package: require('../package.json'),
 
-	path: fspath.join(__dirname, 'images'),
+	path: path.join(__dirname, 'images'),
 	thumbPath: '/tmp/gander',
 	thumbAble: /\.(png|jpe?g|gif)$/i,
 	thumbWidth: 150,

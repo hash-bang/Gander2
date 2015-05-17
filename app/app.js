@@ -1,4 +1,8 @@
-var app = angular.module('app', ['ngResource', 'ngRoute', 'ng-context-menu']);
+var app = angular.module('app', [
+	'ngResource',
+	'ngRoute',
+	'ng-context-menu'
+]);
 
 app.run(function($rootScope) {
 	$rootScope.user = {};
