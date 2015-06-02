@@ -29,7 +29,7 @@ app.controller('treeController', function($scope, $rootScope, $q, $routeParams, 
 					branch.children = children;
 					branch.status = 'loaded';
 					if (
-						(branch.path = '/') || // Always expand root
+						(branch.path == '/') || // Always expand root
 						(branch.path.substr(0, $scope.path.length) == branch.path) // The loaded dir is in the path (i.e. we should expand it)
 					) {
 						branch.expanded = true;
