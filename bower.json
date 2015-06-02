@@ -14,10 +14,10 @@
     "jquery-mousewheel": "~3.1.12",
     "jquery.scrollTo": "~1.4.13",
     "jquery-ui": "~1.11.1",
-    "keymaster": "~1.6.2",
     "lodash": "~2.4.1",
     "ng-context-menu": "~1.0.1",
-    "angular-xenophilous": "~1.3.0"
+    "angular-xenophilous": "~1.3.0",
+    "angular-hotkeys": "chieffancypants/angular-hotkeys#~1.4.5"
   },
   "resolutions": {
     "angular-route": "~1.3.0",

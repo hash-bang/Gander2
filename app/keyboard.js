@@ -1,90 +1,159 @@
-app.run(function($rootScope) {
+app.run(function(hotkeys, $rootScope) {
 	// Directory navigation {{{
-	key('ctrl+left, shift+left, alt+x', function() {
-		ngBroadcast('treeMove', 'out');
+	hotkeys.add({
+		combo: ['ctrl+left', 'shift+left', 'alt+x'],
+		callback: function() {
+			$rootScope.$broadcast('treeMove', 'out');
+		}
 	});
-	key('ctrl+right, shift+right, alt+z', function() {
-		ngBroadcast('treeMove', 'in');
+	hotkeys.add({
+		combo: ['ctrl+right', 'shift+right', 'alt+z'],
+		callback: function() {
+			$rootScope.$broadcast('treeMove', 'in');
+		}
 	});
-	key('ctrl+up, shift+up, alt+a', function() {
-		ngBroadcast('treeMove', 'up');
+	hotkeys.add({
+		combo: ['ctrl+up', 'shift+up', 'alt+a'],
+		callback: function() {
+			$rootScope.$broadcast('treeMove', 'up');
+		}
 	});
-	key('ctrl+down, shift+down, alt+s', function() {
-		ngBroadcast('treeMove', 'down');
+	hotkeys.add({
+		combo: ['ctrl+down', 'shift+down', 'alt+s'],
+		callback: function() {
+			$rootScope.$broadcast('treeMove', 'down');
+		}
 	});
 	// }}}
 
 	// Image zooming {{{
-	key('q, minus', function() {
-		$('#iviewer .iviewer_zoom_in').trigger('mousedown');
+	hotkeys.add({
+		combo: 'q, minus',
+		callback: function() {
+			$('#iviewer .iviewer_zoom_in').trigger('mousedown');
+		}
 	});
-	key('w, plus', function() {
-		$('#iviewer .iviewer_zoom_out').trigger('mousedown');
+	hotkeys.add({
+		combo: 'w, plus',
+		callback: function() {
+			$('#iviewer .iviewer_zoom_out').trigger('mousedown');
+		}
 	});
-	key('e', function() {
-		$('#iviewer').iviewer('fit');
+	hotkeys.add({
+		combo: 'e',
+		callback: function() {
+			$('#iviewer').iviewer('fit');
+		}
 	});
-	key('r', function() {
-		$('#iviewer').iviewer('set_zoom', 100);
+	hotkeys.add({
+		combo: 'r',
+		callback: function() {
+			$('#iviewer').iviewer('set_zoom', 100);
+		}
 	});
 	// }}}
 
 	// Mode toggles {{{
-	key('backspace', function() {
-		ngBroadcast('changeWheelMode');
+	hotkeys.add({
+		combo: 'backspace',
+		callback: function() {
+			$rootScope.$broadcast('changeWheelMode');
+		}
 	});
 	// }}}
 
 	// Image sorting {{{
-	key('t', function() {
-		ngBroadcast('changeSort', 'random');
+	hotkeys.add({
+		combo: 't',
+		callback: function() {
+			$rootScope.$broadcast('changeSort', 'random');
+		}
 	});
-	key('shift+t', function() {
-		ngBroadcast('changeSort', 'name');
+	hotkeys.add({
+		combo: 'shift+t',
+		callback: function() {
+			$rootScope.$broadcast('changeSort', 'name');
+		}
 	});
-	key('ctrl+t', function() {
-		ngBroadcast('changeSort', 'date');
+	hotkeys.add({
+		combo: 'ctrl+t',
+		callback: function() {
+			$rootScope.$broadcast('changeSort', 'date');
+		}
 	});
-	key('alt+t', function() {
-		ngBroadcast('changeSort', 'size');
+	hotkeys.add({
+		combo: 'alt+t',
+		callback: function() {
+			$rootScope.$broadcast('changeSort', 'size');
+		}
 	});
 	// }}}
 
 	// Image filtering {{{
-	key('/', function() {
-		ngBroadcast('changeActiveEmblems', 'toggle', 'star');
+	hotkeys.add({
+		combo: '/',
+		callback: function() {
+			$rootScope.$broadcast('changeActiveEmblems', 'toggle', 'star');
+		}
 	});
-	key('shift+/, ctrl+/', function() {
-		ngBroadcast('changeFilter', 'stars', 'toggle');
+	hotkeys.add({
+		combo: 'shift+/, ctrl+/',
+		callback: function() {
+			$rootScope.$broadcast('changeFilter', 'stars', 'toggle');
+		}
 	});
 	// }}}
 
 	// Image selection {{{
-	key('a, left, pageup', function() {
-		ngBroadcast('changeActive', 'previous');
+	hotkeys.add({
+		combo: 'a, left, pageup',
+		callback: function() {
+			$rootScope.$broadcast('changeActive', 'previous');
+		}
 	});
-	key('shift+a, ctrl+a', function() {
-		ngBroadcast('changeActive', 'previous', 10);
+	hotkeys.add({
+		combo: 'shift+a, ctrl+a',
+		callback: function() {
+			$rootScope.$broadcast('changeActive', 'previous', 10);
+		}
 	});
-	key('s, right, pagedown', function() {
-		ngBroadcast('changeActive', 'next');
+	hotkeys.add({
+		combo: 's, right, pagedown',
+		callback: function() {
+			$rootScope.$broadcast('changeActive', 'next');
+		}
 	});
-	key('shift+s, ctrl+s', function() {
-		ngBroadcast('changeActive', 'next', 10);
+	hotkeys.add({
+		combo: 'shift+s, ctrl+s',
+		callback: function() {
+			$rootScope.$broadcast('changeActive', 'next', 10);
+		}
 	});
-	key('z, home', function() {
-		ngBroadcast('changeActive', 'first');
+	hotkeys.add({
+		combo: 'z, home',
+		callback: function() {
+			$rootScope.$broadcast('changeActive', 'first');
+		}
 	});
-	key('x, end', function() {
-		ngBroadcast('changeActive', 'last');
+	hotkeys.add({
+		combo: 'x, end',
+		callback: function() {
+			$rootScope.$broadcast('changeActive', 'last');
+		}
 	});
 
-	key('f, space, escape', function() {
-		ngBroadcast('doInteract');
+	hotkeys.add({
+		combo: 'f, space, escape',
+		callback: function() {
+			$rootScope.$broadcast('doInteract');
+		}
 	});
 
-	key('shift+f, shift+space', function() {
-		ngBroadcast('doInteract', {recursive: true});
+	hotkeys.add({
+		combo: 'shift+f, shift+space',
+		callback: function() {
+			$rootScope.$broadcast('doInteract', {recursive: true});
+		}
 	});
 	// }}}
 });
