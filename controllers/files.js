@@ -1,5 +1,5 @@
 var _ = require('lodash');
-var async = require('async');
+var async = require('async-chainable');
 var gm = require('gm');
 var fs = require('fs');
 var fspath = require('path');
@@ -7,135 +7,115 @@ var mkdirp = require('mkdirp');
 var walk = require('walk');
 
 app.all('/api/dir/*', function(req, res) {
-	var path;
-	if (req.params[0]) {
-		path = fspath.join(config.path, req.params[0]);
-		thumbPath = fspath.join(config.thumbPath, req.params[0]);
-	} else {
-		path = config.path;
-		thrumbPath = config.thumbPath;
-	}
+	var output = [];
 
-	async.parallel({
-		files: function(next) {
-			fs.readdir(path, function(err, files) {
-				if (err) return next('Cannot read directory');
-				next(null, files);
-			});
-		},
-		json: function(next) {
-			fs.readFile(fspath.join(path, config.ganderFile), function(err, data) {
-				if (err) return next(); // File probably doesn't exist - fail silently
-				next(null, JSON.parse(data));
-			});
-		}
-	}, function(err, results) {
-		var tasks = [];
-		var contents = [];
-
-		if (err) return res.send(400, err);
-
-		results.files.forEach(function(f, i) {
-			if (f == config.ganderFile) 
-				return;
-
-			tasks.push(function(next) {
-				var filePath = fspath.join(path, f);
-				fs.stat(filePath, function(err, stats) {
-					var fileInfo = {
-						name: f,
-						type:
-							stats.isFile() ? 'file' :
-							stats.isDirectory() ? 'dir' :
-							'unknown',
-						size: stats.size,
-						ctime: stats.ctime,
-						mtime: stats.mtime,
-					};
-					if (results.json && results.json[f])
-						_.extend(fileInfo, results.json[f]);
-					if (fileInfo.type == 'dir') { // Peek into dir and see if it has any grand-children {{{
-						fs.readdir(filePath, function(err, files) {
-							if (err) return next(err);
-							async.detect(files, function(file, peekNext) {
-								fs.stat(fspath.join(filePath, file), function(err, stat) {
-									if (err) return peekNext(false);
-									return peekNext(stat.isDirectory());
-								});
-							}, function(result) {
-								if (result) // At least one child of this directory is also a directory
-									fileInfo.peekDir = true;
-								next(null, fileInfo);
-							});
-							/* if (files.length > 0)
-								fileInfo.peekDir = files.length; */
-						});
-					} else { // Not a directory - no need to recurse into it
-						next(null, fileInfo);
-					} // }}}
+	async()
+		.set('path', req.params[0] ? fspath.join(config.path, req.params[0]) : config.path)
+		.set('thumbPath', req.params[0] ? fspath.join(config.thumbPath, req.params[0]) : config.thumbPath)
+		.parallel({
+			files: function(next) {
+				fs.readdir(this.path, next);
+			},
+			json: function(next) {
+				fs.readFile(fspath.join(this.path, config.ganderFile), function(err, data) {
+					if (err) return next(); // File probably doesn't exist - fail silently
+					next(null, JSON.parse(data));
 				});
-			});
-		});
+			}
+		})
+		.forEach('files', function(nextFile, file) {
+			if (file == config.ganderFile) return nextFile(); // Skip gander info file
+			var filePath = fspath.join(this.path, file);
 
-		async.parallel(tasks, function(err, files) {
-			res.send(files);
+			async()
+				.set('json', this.json)
+				.then('stats', function(next) {
+					fs.stat(filePath, next);
+				})
+				.then('fileInfo', function(next) {
+					var fileInfo = {
+						name: file,
+						type:
+							this.stats.isFile() ? 'file' :
+							this.stats.isDirectory() ? 'dir' :
+							'unknown',
+						size: this.stats.size,
+						ctime: this.stats.ctime,
+						mtime: this.stats.mtime,
+					};
+
+					if (this.json && this.json[file]) _.merge(fileInfo, this.json[file]); // If the info file has extra info, merge it
+					next(null, fileInfo);
+				})
+				.then(function(next) {
+					var self = this;
+					if (self.fileInfo.type != 'dir') return next();
+					fs.readdir(filePath, function(err, contents) {
+						if (err) return next(err);
+						if (!contents) return next();
+						if (contents.some(function(file) {
+							return fs.statSync(fspath.join(filePath, file)).isDirectory();
+						}))
+							self.fileInfo.peekDir = true;
+						next();
+					});
+				})
+				.then(function(next) {
+					output.push(this.fileInfo);
+					next();
+				})
+				.end(nextFile);
+		})
+		.end(function(err) {
+			if (err) return res.status(400).send(err);
+			res.send(output);
 		});
-	});
 });
 
 app.get('/api/thumb/*', function(req, res) {
-	var path, thumbPath;
-	if (req.params[0]) {
-		path = fspath.join(config.path, req.params[0]);
-		thumbPath = fspath.join(config.thumbPath, req.params[0]);
-	} else {
-		return res.send(400, 'No path specified');
-	}
-
-	console.log('REQUEST THUMB', path);
-
-	if (!config.thumbAble.exec(path)) return res.send(400, 'Unable to thumb this path');
-
-	async.waterfall([
-		function(next) {
-			fs.readFile(thumbPath, function(err, data) {
+	async()
+		.set('path', req.params[0] ? fspath.join(config.path, req.params[0]) : null)
+		.set('thumbPath', req.params[0] ? fspath.join(config.thumbPath, req.params[0]) : null)
+		.then(function(next) {
+			// Sanity checks {{{
+			if (!this.path) return next('No path specified');
+			if (!config.thumbAble.exec(this.path)) return next('Unable to thumb this path');
+			next();
+			// }}}
+		})
+		.then(function(next) {
+			var self = this;
+			fs.readFile(self.thumbPath, function(err, data) {
 				if (err) return next(); // Couldn't read existing thumb - continue to generate one and serve that
-
-				res.set('Content-Type', 'image/png');
-				res.send(200, fs.readFileSync(thumbPath));
-				next('Thumb already exists');
+				next('END');
 			});
-		},
-		function(next) {
-			fs.exists(path, function(exists) {
+		})
+		.then(function(next) {
+			fs.exists(this.path, function(exists) {
 				if (!exists) return next('File does not exist');
 				next();
 			});
-		},
-		function(next) {
-			mkdirp(fspath.dirname(thumbPath), function(err) {
-				if (err) return next(err);
-				next();
-			});
-		},
-		function(next) {
-			gm(path)
+		})
+		.then(function(next) {
+			mkdirp(fspath.dirname(this.thumbPath), next);
+		})
+		.then('buffer', function(next) {
+			gm(this.path)
 				.setFormat('png')
 				.resize(config.thumbWidth, config.thumbHeight)
 				.toBuffer(function(err, buffer) {
 					if (err) return next(err);
 					next(null, buffer);
 				});
-		},
-		function(buffer, next) {
-			fs.writeFile(thumbPath, buffer, 'binary'); // Flush this to disk in the background
-			res.set('Content-Type', 'image/png');
-			res.send(200, buffer); // Meanwhile respond to the browser in the foreground, buwahaha Node.
-			next();
-		}
-	], function(err) {
-		if (err && err != 'Thumb already exists') return res.send(400, err);
-	});
+		})
+		.then(function(next) {
+			fs.writeFile(this.thumbPath, this.buffer, 'binary', next);
+		})
+		.end(function(err) {
+			if (err && err != 'END') return res.status(400).send(err);
+			console.log('SF', this.thumbPath);
+			res.sendFile(this.thumbPath);
+		});
 });
 
 
@@ -171,41 +151,37 @@ app.get('/api/file/*', function(req, res) {
 	if (req.params[0]) {
 		path = fspath.join(config.path, req.params[0]);
 	} else {
-		return res.send(400, 'No path specified');
+		return res.status(400).send('No path specified');
 	}
 
-	if (!config.serveAble.exec(path)) return res.send(400, 'Unable to serve this path');
+	if (!config.serveAble.exec(path)) return res.status(400).send('Unable to serve this path');
 
-	fs.readFile(path, function(err, data) {
-		if (err) return next(); // Couldn't read existing thumb - continue to generate one and serve that
-
-		res.set('Content-Type', 'image/png');
-		res.send(200, fs.readFileSync(path));
-	});
+	res.sendFile(path);
 });
 
 app.put('/api/file/*', function(req, res) {
-	var path, thumbPath;
-	if (req.params[0]) {
-		path = fspath.join(config.path, req.params[0]);
-	} else {
-		return res.send(400, 'No path specified');
-	}
-
-	var jsonPath = fspath.join(fspath.dirname(path), config.ganderFile);
-
-	if (!config.serveAble.exec(path)) return res.send(400, 'Unable to serve this path');
-
-	async.waterfall([
-		function(next) {
+	async()
+		.set('path', req.params[0] ? fspath.join(config.path, req.params[0]) : config.path)
+		.set('thumbPath', req.params[0] ? fspath.join(config.thumbPath, req.params[0]) : config.thumbPath)
+		.then(function(next) {
+			// Sanity checks {{{
+			if (!this.path) return next('No path specified');
+			if (!config.serveAble.exec(this.path)) return next('Unable to serve this path');
+			next();
+			// }}}
+		})
+		.then('jsonPath', function(next) {
+			next(null, fspath.join(fspath.dirname(this.path), config.ganderFile))
+		})
+		.then('rawData', function(next) {
 			fs.readFile(jsonPath, function(err, data) {
 				if (err) return next(null, '{}'); // File doesn't exist - fake content
 				next(null, data);
 			});
-		},
-		function(fileData, next) {
+		})
+		.then('json', function(next) {
 			var file = fspath.basename(req.body.path);
-			var jsonData = JSON.parse(fileData);
+			var jsonData = JSON.parse(this.rawData);
 			if (!jsonData) return next('Not valid JSON data');
 			if (req.body.emblems && req.body.emblems.length > 0) {
 				if (!jsonData[file])
@@ -215,18 +191,17 @@ app.put('/api/file/*', function(req, res) {
 				delete jsonData[file].emblems;
 			}
 			next(null, jsonData);
-		},
-		function(jsonData, next) {
-			if (_.isEmpty(jsonData)) { // Nothing to write - delete the file if it exists
+		})
+		.then(function(next) {
+			if (_.isEmpty(this.json)) { // Nothing to write - delete the file if it exists
 				fs.unlink(jsonPath);
 			} else {
-				console.log('WRITE', jsonData);
-				fs.writeFile(jsonPath, JSON.stringify(jsonData));
+				fs.writeFile(jsonPath, JSON.stringify(this.json));
 			}
 			next();
-		},
-	], function(err, results) {
-		if (err) return res.send(400, err);
-		res.send(200);
-	});
+		})
+		.end(function(err) {
+			if (err) return res.status(400).send(err);
+			res.send(200);
+		});
 });
