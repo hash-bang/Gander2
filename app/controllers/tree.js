@@ -105,37 +105,28 @@ app.controller('treeController', function($scope, $rootScope, $q, $routeParams, 
 
 
 	$scope.$on('treeMove', function(e, direction) {
-		var node;
-		var peerOffset;
-
 		console.log('Move tree', direction);
 		switch(direction) {
-			case 'out':
-				node = $scope.getPathParent($scope.path);
-				if (node)
-					$scope.path = node.path;
+			case 'down':
+				var parentTree = $scope.getPathParent($scope.path);
+				var myOffset = _.findIndex(parentTree.children, {path: $scope.path});
+				if (myOffset + 1 < parentTree.children.length) {
+					console.log('PATH DOWN', parentTree.children[myOffset+1].path);
+					$scope.path = parentTree.children[myOffset+1].path;
+				}
 				break;
 			case 'up':
-				node = $scope.getPathParent($scope.path);
-				for (peerOffset in node.children) {
-					if (node.children[peerOffset].path == $scope.path) {
-						if (peerOffset > 0)
-							$scope.path = node.children[peerOffset - 1].path;
-						return;
-					}
-				}
+				var parentTree = $scope.getPathParent($scope.path);
+				var myOffset = _.findIndex(parentTree.children, {path: $scope.path});
+				if (myOffset - 1 >= 0) $scope.path = parentTree.children[myOffset-1].path;
 				break;
-			case 'down':
-				node = $scope.getPathParent($scope.path);
-				for (peerOffset in node.children) {
-					if (node.children[peerOffset].path == $scope.path) {
-						peerOffset = parseInt(peerOffset) + 1;
-						if (peerOffset < node.children.length) {
-							$scope.path = node.children[peerOffset].path;
-						}
-						return;
-					}
-				}
+			case 'in':
+				var parentTree = $scope.getPath($scope.path);
+				if (parentTree.children && parentTree.children.length) $scope.path = parentTree.children[0].path;
+				break;
+			case 'out':
+				var parentTree = $scope.getPath($scope.path);
+				$scope.path = parentTree.path;
 				break;
 			default:
 				console.error('Unknown direction', direction);

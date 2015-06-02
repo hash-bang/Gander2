@@ -1,4 +1,5 @@
 var app = angular.module('app', [
+	'cfp.hotkeys',
 	'ngResource',
 	'ngRoute',
 	'ng-context-menu'
