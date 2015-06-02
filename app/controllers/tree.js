@@ -75,17 +75,17 @@ app.controller('treeController', function($scope, $rootScope, $q, $routeParams, 
 		var bits = path.split('/');
 		bits.shift();
 		var tree = $scope.tree[0];
-		if (path == '/')
-			return tree;
-		// console.log('Seek path', path, bits);
+		console.log('Seek path', path, bits);
+		if (!path || path == '/') return tree;
 		for (offset in bits) {
 			var dstPath = '/' + bits.splice(0, offset+1).join('/');
 			var found = false;
-			// console.log('Find path', dstPath, 'in', tree);
+			console.log('Find path', dstPath, 'in', tree);
 			if (tree.children) {
-				for (childOffset in tree.children) {
-					// console.log('Child', tree.children[childOffset]);
+				for (var childOffset in tree.children) {
+					console.log('Child', tree.children[childOffset].path, '~=', dstPath);
 					if (tree.children[childOffset].path == dstPath) {
+						console.log('GO INTO', tree.children[childOffset].path);
 						tree = tree.children[childOffset];
 						found = true;
 					}
