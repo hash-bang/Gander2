@@ -135,8 +135,8 @@ app.controller('fileController', function($scope, $rootScope, $timeout, Files) {
 						}
 					}
 					if ($scope.config.sortStarFirst) {
-						astar = (a.emblems && _.contains(a.emblems, 'star'));
-						bstar = (b.emblems && _.contains(b.emblems, 'star'));
+						var astar = (a.emblems && _.contains(a.emblems, 'star'));
+						var bstar = (b.emblems && _.contains(b.emblems, 'star'));
 						if (astar && !bstar) {
 							return -1;
 						} else if (!astar && bstar) {
