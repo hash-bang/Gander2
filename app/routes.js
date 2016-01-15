@@ -1,14 +1,15 @@
-app.config(function($routeProvider, $locationProvider) {
-	$routeProvider
-		.when('/', {
-			templateUrl: "/partials/browse.html",
-			reloadOnSearch: false
+app.config(function($stateProvider, $urlRouterProvider) {
+	$urlRouterProvider
+		.otherwise('/');
+
+	$stateProvider
+		.state('home', {
+			url: '/',
+			views: {main: {templateUrl: '/partials/browse.html'}},
 		})
-		.when('/!', {
-			templateUrl: "/partials/browse.html",
-			reloadOnSearch: false
-		})
-		.when('/settings', {
-			templateUrl: "/partials/settings.html"
+		.state('browsing', {
+			url: '/!',
+			views: {main: {templateUrl: '/partials/browse.html'}},
+			reloadOnSearch: false,
 		})
 });

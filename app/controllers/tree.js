@@ -1,5 +1,5 @@
-app.controller('treeController', function($scope, $rootScope, $q, $routeParams, Files, $timeout) {
-	$scope.path = $routeParams.p || '/';
+app.controller('treeController', function($scope, $rootScope, $q, $stateParams, Files, $timeout) {
+	$scope.path = $stateParams.p || '/';
 	$scope.tree = [
 		{
 			path:'/',
