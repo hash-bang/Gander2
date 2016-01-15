@@ -3,6 +3,9 @@
   "description": "Simple NodeJS gallery application suitable for kiosks",
   "version": "2.0.0",
   "main": "server.js",
+  "bin": {
+    "gander-mkthumbs": "./gander-mkthumbs.js"
+  },
   "private": true,
   "engines": {
     "node": "0.10.x"
