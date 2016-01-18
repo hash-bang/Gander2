@@ -26,6 +26,7 @@
     "express": "^4.13.3",
     "express-ejs-layouts": "^2.0.0",
     "express-log-url": "^1.0.1",
+    "file-emitter": "^2.0.0",
     "gm": "^1.21.1",
     "gulp": "^3.9.0",
     "gulp-angular-templatecache": "^1.8.0",
