@@ -20,6 +20,7 @@ program
 
 	async()
 		.set('fileCount', 0)
+		.set('alreadyExist', 0)
 		.set('thumbsMade', 0)
 		.set('nonThumbable', 0)
 		.then(function(next) {
@@ -50,10 +51,11 @@ program
 
 					async()
 						.set('filePath', fspath.join(path, file.name))
-						.set('thumbPath', fspath.join(config.thumbPath, path, file.name))
+						.set('thumbPath', fspath.join(config.thumbPath.substr(config.thumbPath.length), path, file.name))
 						.then('thumbStat', function(next) {
 							fs.stat(this.thumbPath, function(err, stat) {
 								if (err) return next(); // Try to gen thumbnail if not already found
+								self.alreadyExist++;
 								next('SKIP'); // Skip otherwise
 							});
 						})
@@ -96,6 +98,7 @@ program
 			}
 
 			console.log('Files seen', colors.cyan(this.fileCount));
+			console.log('Thumbs already exist', colors.cyan(this.alreadyExist));
 			console.log('Non-thumbable files seen', colors.cyan(this.nonThumbable));
 			console.log('Thumbs made', colors.cyan(this.thumbsMade));
 			process.exit(0);
